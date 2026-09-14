@@ -48,7 +48,7 @@ spotless {
 		googleJavaFormat()
 		removeUnusedImports()
 		trimTrailingWhitespace()
-		endWithNewLines()
+		endWithNewLine()
 	}
 }
 
