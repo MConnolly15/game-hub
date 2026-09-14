@@ -32,8 +32,17 @@
     <a href="" class="navbar-button">Account</a>
     <a href="" class="navbar-button">FAQs</a>
 
-    <form th:action="@{/logout}" method="post">
-        <button type="submit" class="navigation-button">Logout</button>
+    <form th:action="@{/logout}" method="post" class="logout-form">
+
+        <input
+                type="hidden"
+                th:name="${_csrf.parameterName}"
+                th:value="${_csrf.token}">
+
+        <button type="submit" class="navbar-button">
+            Logout
+        </button>
+
     </form>
 
 </nav>

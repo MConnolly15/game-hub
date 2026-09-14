@@ -1,47 +1,32 @@
 package com.example.gamehub.config;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
-import java.io.IOException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Configuration
 public class SecurityConfiguration {
 
-  @Value("${okta.oauth2.issuer}")
-  private String issuer;
-
-  @Value("${okta.oauth2.client-id}")
-  private String clientId;
-
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-    http.authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
-        .oauth2Login(withDefaults())
-        .logout(logout -> logout.addLogoutHandler(logoutHandler()));
+    http.authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers("/login", "/register", "/css/**", "/js/**", "/images/**")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated())
+        .formLogin(form -> form.loginPage("/login").permitAll())
+        .logout(logout -> logout.logoutSuccessUrl("/login?logout").permitAll());
 
     return http.build();
   }
 
-  private LogoutHandler logoutHandler() {
-
-    return (request, response, authentication) -> {
-      try {
-
-        String baseUrl = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString();
-
-        response.sendRedirect(issuer + "v2/logout?client_id=" + clientId + "&returnTo=" + baseUrl);
-
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    };
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
   }
 }
