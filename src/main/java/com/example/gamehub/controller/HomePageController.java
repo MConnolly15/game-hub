@@ -1,14 +1,17 @@
 package com.example.gamehub.controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class HomePageController {
 
-  @RequestMapping("/")
-  public RedirectView redirect() {
-    return new RedirectView("/home");
+  @GetMapping("/")
+  public ModelAndView homePage() {
+    ModelAndView modelAndView = new ModelAndView("homepage");
+    String user = "User";
+    modelAndView.addObject("username", user);
+    return modelAndView;
   }
 }
