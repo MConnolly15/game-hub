@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>Navbar</title>-->
+<!--</head>-->
+<body>
+<nav class="navbar" th:fragment="navbar">
+    <button class="navbar-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
+    <ul class="container">
+        <li class="navbarlogo"><a href="/"> Beehive Games</a></li>
+<!--        authenticated:-->
+        <li><a href="/logout">Logout</a></li>
+        <li><a href="/leaderboard"></a></li>
+<!--        Needs to login:-->
+        <li><a href="/login">Login</a></li>
+        <li><a href="/register">Register</a></li>
+
+    </ul>
+</nav>
+<script src="/js/navbar.js" defer></script>
+
+</body>
+</html>

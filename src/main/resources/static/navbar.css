@@ -1,0 +1,32 @@
+navbar {
+    /*Fixed to top updates*/
+    position: sticky !important;
+    top: 0;
+    /*Navbar renders on top of other content as you scroll,rather than overlapping:*/
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 1.5rem;
+    background: darkgoldenrod;
+
+    ul {
+
+        display: flex;
+        margin: 0 auto;
+        padding: 1rem 0;
+        align-items: center;
+
+        list-style-type: none;
+    }
+
+    li {
+        padding: 0px 0.5rem;
+    }
+
+    .navbarlogo{
+        font-family: "Comic Sans MS", cursive;
+    }
+    a{
+        text-align: left;
+    }
+}

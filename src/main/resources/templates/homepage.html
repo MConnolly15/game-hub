@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Game Hive</title>
     <link rel="stylesheet" href="/homepage.css">
+    <link rel="stylesheet" th:href="@{/navbar.css}">
 
     <meta
             name="viewport"
@@ -12,6 +13,9 @@
 </head>
 
 <body>
+<!--    wire to navbar:-->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
 
 <header>
     <a href="">
@@ -31,7 +35,7 @@
     <a href="" class="navbar-button">Home</a>
     <a href="" class="navbar-button">Account</a>
     <a href="" class="navbar-button">FAQs</a>
-
+    
     <form th:action="@{/logout}" method="post" class="logout-form">
 
         <input
