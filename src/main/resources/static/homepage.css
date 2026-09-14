@@ -1,33 +1,144 @@
-.main {
-    display:flex;
-    --s: 100px;  /* size  */
-    --m: 4px;    /* margin */
-    --f: calc(1.732 * var(--s) + 4 * var(--m)  - 1px);
+/*----------------------------------
+    Main Body CSS
+-----------------------------------*/
+body {
+    background-color: khaki;
+    color: #000000;
 }
 
-.container {
-    font-size: 0; /*disable white space between inline block element */
+/*----------------------------------
+    Header CSS
+-----------------------------------*/
+header {
+    background-color: #e4d96b;
+    border-bottom: 1px solid;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 150px;
 }
 
-.container div {
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 7px;
+    justify-content: center;
+    }
+
+.header_title {
+    color: #000000;
+    font-size: 16px;
+}
+
+.user_image {
+    display: flex;
+    align-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 7px;
+    justify-content: center;
+}
+
+
+
+/*----------------------------------
+    NavBar CSS
+-----------------------------------*/
+
+.navbar {
+    width: 100%;
+    background-color: #e6d636;
+    border-bottom: 1px solid #e4d96b;
+    color: white;
+    height: 50px;
+}
+
+.navigation-buttons {
+    display: flex;
+    align-items: center;
+
+    gap: 18px;
+}
+
+
+.navigation-links a {
+    padding: 6px 5px;
+    border-radius: 4px;
+    transition: background-color 0.15s ease;
+}
+
+.navigation-links a:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    text-decoration: none;
+}
+
+/*----------------------------------
+    Footer CSS
+-----------------------------------*/
+
+
+/*----------------------------------
+    Hexagons CSS
+-----------------------------------*/
+
+@property --_c {syntax: "<number>";initial-value: 0;inherits: true}
+.game_section {
+    --s: 250px;  /* size  */
+    --g: 10px;   /* gap */
+
+    display: flex;
+    gap: var(--g);
+    flex-wrap: wrap;
+    container-type: inline-size;
+}
+.game_section > * {
     width: var(--s);
-    margin: var(--m);
-    height: calc(var(--s)*1.1547);
-    display: inline-block;
-    font-size:initial;
-    clip-path: polygon(0% 25%, 0% 75%, 50% 100%, 100% 75%, 100% 25%, 50% 0%);
-    background: red;
-    margin-bottom: calc(var(--m) - var(--s)*0.2885);
+    aspect-ratio: cos(30deg);
+    border-radius: 50% / 25%;
+    corner-shape: bevel;
+    overflow: hidden;
+    margin-bottom: calc(var(--s)/(-4*cos(30deg)));
+
+    --_n: round(down,(100cqw + var(--g))/(var(--s) + var(--g)));
+    --_m: round(down,(100cqw - (var(--s) - var(--g))/2)/(var(--s) + var(--g)));
+    --_i: calc((sibling-index() - 1 + var(--_m))/(var(--_n) + var(--_m)));
+    --_c: mod(var(--_i),1);
+    margin-left: if(style(--_c: 0): calc((var(--s) + var(--g))/2); else: 0;);
 }
-.container div:nth-child(odd) {
-    background:green;
+
+.game_section div {
+    display: grid;
+    place-content: center;
+    border: 10px solid ;
+    box-sizing: border-box;
+    font: bold 28px system-ui,sans-serif;
 }
-.container::before {
-    content: "";
-    width: calc(var(--s)/2 + var(--m));
-    float: left;
+
+.game_hexagon {
+    position: relative;
+}
+
+.game_hexagon img {
+    width: 120%;
     height: 120%;
-    shape-outside: repeating-linear-gradient(
-            #0000 0 calc(var(--f) - 3px),
-            #000  0 var(--f));
+    object-fit: cover;
+    display: block;
+    position: absolute;
+}
+
+.game_hexagon h3 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    color: white;
+    font-size: 32px;
+    background-color: rgba(0, 0, 0, 0.65);
+    border-radius: 8px;
+    padding: 8px 16px;
+    z-index: 2;
 }
