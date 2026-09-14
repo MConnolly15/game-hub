@@ -1,14 +1,17 @@
 variable "aws_region" {
-  type    = string
-  default = "eu-west-2"
+  description = "AWS Region for github actions"
+  type        = string
+  default     = "eu-west-2"
 }
 
 variable "environment" {
-  type    = string
-  default = "dev"
+  description = "Environment name"
+  type        = string
+  default     = "dev"
 }
 
 variable "project_name" {
-  type    = string
-  default = "Game Hive"
+  description = "Project Name"
+  type        = string
+  default     = "Game Hive"
 }
