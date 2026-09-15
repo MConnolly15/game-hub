@@ -13,23 +13,25 @@
 </head>
 
 <body>
-<!--    wire to navbar:-->
-<div th:replace="~{fragments/navbar :: navbar}"></div>
+
 
 
 <header>
-    <a href="">
-        <span class="logo"><img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBIjgAA0GNHh_JvdefzBWpCGdzJq8Wd3bFHfd4pZc-GA&s=10"></span>
-        <span class="header_title">Game Hive</span>
-    </a>
+    <!--    wire to navbar:-->
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+<!--    <a href="">-->
+<!--        <span class="logo"><img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBIjgAA0GNHh_JvdefzBWpCGdzJq8Wd3bFHfd4pZc-GA&s=10"></span>-->
+<!--        <span class="header_title">Game Hive</span>-->
+<!--    </a>-->
 
-    <div class="site-header-user">
-        <span>Katie Brown</span>
-        <button class="">
-            <img class="user_image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlbbdPqXU3wwsJQPwkgU42saoIIg22ct8rNcFV_RU6PA&s=10"></button>
-    </div>
+<!--    <div class="site-header-user">-->
+<!--        <span>Katie Brown</span>-->
+<!--        <button class="">-->
+<!--            <img class="user_image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlbbdPqXU3wwsJQPwkgU42saoIIg22ct8rNcFV_RU6PA&s=10"></button>-->
+<!--    </div>-->
 
 </header>
+
 
 <nav class="navbar">
     <a href="" class="navbar-button">Home</a>
@@ -37,6 +39,7 @@
     <a href="" class="navbar-button">FAQs</a>
     
     <form th:action="@{/logout}" method="post" class="logout-form">
+
 
         <input
                 type="hidden"

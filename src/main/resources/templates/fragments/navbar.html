@@ -1,5 +1,10 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--to check if logged in:-->
+
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
 <!--<head>-->
 <!--    <meta charset="UTF-8">-->
 <!--    <title>Navbar</title>-->
@@ -7,16 +12,24 @@
 <body>
 <nav class="navbar" th:fragment="navbar">
     <button class="navbar-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
-    <ul class="container">
-        <li class="navbarlogo"><a href="/"> Beehive Games</a></li>
-<!--        authenticated:-->
-        <li><a href="/logout">Logout</a></li>
-        <li><a href="/leaderboard"></a></li>
-<!--        Needs to login:-->
-        <li><a href="/login">Login</a></li>
-        <li><a href="/register">Register</a></li>
 
-    </ul>
+    <div class="container">
+        <ul class="left-side">
+        <li class="navbarlogo"><a href="/"> Beehive Games</a></li>
+<!--        authenticated just add in li:-->
+<!--            sec:authorize="isAuthenticated()"-->
+        <li ><a href="/leaderboard">Leaderboard</a></li>
+            <!--        authenticated:-->
+            <li ><a href="/profile">Profile</a></li>
+        </ul>
+<!--        Needs to login:-->
+        <ul class="right-side">
+        <li ><a href="/login">Login</a></li>
+        <li ><a href="/register">Register</a></li>
+            <!--        authenticated:-->
+            <li ><a href="/logout">Logout</a></li>
+        </ul>
+    </div>
 </nav>
 <script src="/js/navbar.js" defer></script>
 

@@ -7,6 +7,9 @@ body {
     background-color: khaki;
     color: #000000;
     font-family: Arial, sans-serif;
+    /*to help with setting navbar location:*/
+    padding-top: 60px;
+
 }
 
 
@@ -74,12 +77,14 @@ header a {
 /*----------------------------------
     NavBar CSS
 -----------------------------------*/
-
-.navbar {
-    width: 100%;
-    background-color: #e6d636;
-    border-bottom: 1px solid #c8b900;
-
+/*.navbar {*/
+/*    width: 100%;*/
+/*    background-color: #e6d636;*/
+/*    border-bottom: 1px solid #e4d96b;*/
+/*    color: white;*/
+/*    height: 50px;*/
+/*}*/
+.navbar{
     display: flex;
     align-items: center;
     gap: 18px;
