@@ -49,7 +49,7 @@ jobs:
         run: tflint --recursive
 
   java:
-    name: Java
+    name: Java Lint & Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -76,12 +76,10 @@ jobs:
 
       - name: Run tests
         run: ./gradlew test
-
   terraform:
     name: Terraform AWS Login Check
     needs: [terraform-lint, java]
     if: |
-      github.event_name == 'push' &&
       needs.terraform-lint.result == 'success' &&
       needs.java.result == 'success'
     runs-on: ubuntu-latest
