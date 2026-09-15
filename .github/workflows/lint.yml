@@ -140,5 +140,5 @@ jobs:
       - name: Terraform init
         run: terraform init -backend=false
 
-      - name: Terraform plan (verifies AWS login)
+      - name: Terraform plan
         run: terraform plan -input=false
