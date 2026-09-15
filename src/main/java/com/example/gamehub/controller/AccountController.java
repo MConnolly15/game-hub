@@ -1,5 +1,6 @@
 package com.example.gamehub.controller;
 
+import org.springframework.ui.Model;
 import com.example.gamehub.model.User;
 import com.example.gamehub.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,11 +27,15 @@ public class AccountController {
 
   @PostMapping("/register")
   public String registerUser(
-      @RequestParam String name, @RequestParam String email, @RequestParam String password) {
+      @RequestParam String username, @RequestParam String email, @RequestParam String password,
+      Model model) {
 
+    if(userRepository.existsByUsernameIgnoreCase(username)) {
+      model.addAttribute("usernameError", "Username already taken.");
+    return "register";}
     String hashedPassword = passwordEncoder.encode(password);
 
-    User user = new User(name, email, hashedPassword);
+    User user = new User(username, email, hashedPassword);
 
     userRepository.save(user);
 
