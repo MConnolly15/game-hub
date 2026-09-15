@@ -76,6 +76,7 @@ jobs:
 
       - name: Run tests
         run: ./gradlew test
+
   terraform:
     name: Terraform AWS Login Check
     needs: [terraform-lint, java]
@@ -89,8 +90,8 @@ jobs:
         working-directory: terraform
 
     env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ vars.AWS_SECRET_ACCESS_KEY }}
 
     steps:
       - name: Checkout
