@@ -3,10 +3,17 @@
 -----------------------------------*/
 
 body {
+    height: 100%;
+    background-color: #ffc544;
+    color: #252523;
     margin: 0;
-    background-color: khaki;
-    color: #000000;
-    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
 }
 
 
@@ -15,9 +22,8 @@ body {
 -----------------------------------*/
 
 header {
-    background-color: #e4d96b;
-    border-bottom: 1px solid #000000;
-
+    background-color: #fcba06;
+    border-bottom: 1px solid;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -30,17 +36,10 @@ header a {
     display: flex;
     align-items: center;
     gap: 10px;
-
-    color: #000000;
-    text-decoration: none;
-}
-
-.logo {
-    width: 50px;
-    height: 50px;
-
-    object-fit: cover;
-    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    border-radius: 7px;
+    justify-content: center;
 }
 
 .header_title {
@@ -77,8 +76,10 @@ header a {
 
 .navbar {
     width: 100%;
-    background-color: #e6d636;
-    border-bottom: 1px solid #c8b900;
+    background-color: #fcba06;
+    color: white;
+    height: 50px;
+}
 
     display: flex;
     align-items: center;
@@ -114,10 +115,17 @@ header a {
     padding: 0;
 }
 
+footer {
+    background-color: #fcba06;
+}
 
 /*----------------------------------
     Hexagons CSS
 -----------------------------------*/
+
+.game_wrapper {
+    container-type: inline-size;
+}
 
 @property --_c {
     syntax: "<number>";
@@ -133,6 +141,9 @@ header a {
     gap: var(--g);
     flex-wrap: wrap;
     container-type: inline-size;
+
+    padding-top: 20px;
+    padding-bottom: calc(var(--s)/(4*cos(30deg)));
 }
 
 .game_section > * {
@@ -206,8 +217,7 @@ header a {
     transform: translate(-50%, -50%);
 
     margin: 0;
-
-    color: white;
+    color: #e7eddf;
     font-size: 32px;
 
     background-color: rgba(0, 0, 0, 0.65);
@@ -220,6 +230,16 @@ header a {
 }
 
 
+
+/*----------------------------------
+    Colour Palette Hex Values
+    Black - #252523
+    White - #e7eddf
+    Dark yellow - #faa303
+    medium Yellow (Header and footer) - #fcba06
+    light yellow (background) - #ffc544
+    Brown - #5d2d00
+-----------------------------------*/
 /*----------------------------------
     Footer CSS
 -----------------------------------*/
