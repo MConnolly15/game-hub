@@ -15,14 +15,14 @@
 
 <header>
     <a href="">
-        <span class="logo"><img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBIjgAA0GNHh_JvdefzBWpCGdzJq8Wd3bFHfd4pZc-GA&s=10"></span>
+        <span class="logo"><img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBIjgAA0GNHh_JvdefzBWpCGdzJq8Wd3bFHfd4pZc-GA&s=10" alt="GH"></span>
         <span class="header_title">Game Hive</span>
     </a>
 
     <div class="site-header-user">
         <span th:text="${username}">Username</span>
         <button class="">
-            <img class="user_image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlbbdPqXU3wwsJQPwkgU42saoIIg22ct8rNcFV_RU6PA&s=10"></button>
+            <img class="user_image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlbbdPqXU3wwsJQPwkgU42saoIIg22ct8rNcFV_RU6PA&s=10" alt="Icon"></button>
     </div>
 
 </header>
@@ -81,14 +81,17 @@
 
 <footer>
 
-    <div class="site-footer_column">
+    <div class="site-footer__column">
         <a href="#" class="site-footer__logo">Game Hive</a>
-        <h3>Helpful Links</h3>
-        <ul>
-            <li><a href="#">About the Team</a></li>
-            <li><a href="#">FAQs</a></li>
-            <li><a href="#">Contact Us</a></li>
-        </ul>
+
+        <nav class="site-footer__links">
+            <h3>Helpful Links</h3>
+            <ul>
+                <li><a href="#">About the Team</a></li>
+                <li><a href="#">FAQs</a></li>
+                <li><a href="#">Contact Us</a></li>
+            </ul>
+        </nav>
     </div>
 
 </footer>
