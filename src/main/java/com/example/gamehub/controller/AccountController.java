@@ -1,6 +1,5 @@
 package com.example.gamehub.controller;
 
-import org.springframework.ui.Model;
 import com.example.gamehub.model.User;
 import com.example.gamehub.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
