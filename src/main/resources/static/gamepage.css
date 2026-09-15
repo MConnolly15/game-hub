@@ -125,127 +125,6 @@ header a {
     padding: 0;
 }
 
-footer {
-    background-color: #fcba06;
-}
-
-/*----------------------------------
-    Hexagons CSS
------------------------------------*/
-
-.game_wrapper {
-    container-type: inline-size;
-}
-
-@property --_c {
-    syntax: "<number>";
-    initial-value: 0;
-    inherits: true;
-}
-
-.game_section {
-    --s: 250px;
-    --g: 10px;
-
-    display: flex;
-    gap: var(--g);
-    flex-wrap: wrap;
-    container-type: inline-size;
-
-    padding: 20px 20px calc(var(--s) / (4 * cos(30deg))) 20px;
-}
-
-.game_section > * {
-    width: var(--s);
-    aspect-ratio: cos(30deg);
-
-    border-radius: 50% / 25%;
-    corner-shape: bevel;
-
-    overflow: hidden;
-
-    margin-bottom: calc(var(--s) / (-4 * cos(30deg)));
-
-    --_n: round(
-            down,
-            (100cqw + var(--g)) / (var(--s) + var(--g))
-    );
-
-    --_m: round(
-            down,
-            (100cqw - (var(--s) - var(--g)) / 2) /
-            (var(--s) + var(--g))
-    );
-
-    --_i: calc(
-            (sibling-index() - 1 + var(--_m)) /
-            (var(--_n) + var(--_m))
-    );
-
-    --_c: mod(var(--_i), 1);
-
-    margin-left: if(
-    style(--_c: 0):
-    calc((var(--s) + var(--g)) / 2);
-    else: 0;
-);
-}
-
-.game_section div {
-    display: grid;
-    place-content: center;
-
-    border: 10px solid;
-
-    box-sizing: border-box;
-
-    font: bold 28px system-ui, sans-serif;
-}
-
-.game_hexagon {
-    position: relative;
-}
-
-.game_hexagon img {
-    width: 120%;
-    height: 120%;
-
-    object-fit: cover;
-
-    display: block;
-
-    position: absolute;
-}
-
-.game_hexagon h3 {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    margin: 0;
-    color: #e7eddf;
-    font-size: 32px;
-    background-color: rgba(0, 0, 0, 0.65);
-    border-radius: 8px;
-    padding: 8px 16px;
-    z-index: 2;
-}
-
-.game_hexagon a {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    margin: 0;
-    color: #e7eddf;
-    font-size: 32px;
-    background-color: rgba(0, 0, 0, 0.65);
-    border-radius: 8px;
-    padding: 8px 16px;
-    z-index: 2;
-    text-decoration: none;
-}
-
 
 
 /*----------------------------------
@@ -353,4 +232,53 @@ footer {
     .game_hexagon h3 {
         font-size: 22px;
     }
+}
+
+
+/*----------------------------------
+    TicTacToe
+-----------------------------------*/
+
+
+.tictactoe_board {
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+    gap: 6px;
+    margin: 20px 0;
+}
+
+.tictactoe_cell_form {
+    margin: 0;
+}
+
+.tictactoe_cell {
+    width: 100px;
+    height: 100px;
+    font-size: 2rem;
+    font-weight: bold;
+    background-color: #ffffff;
+    border: 2px solid #252523;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.tictactoe_cell:disabled {
+    cursor: default;
+    background-color: #f4f4f4;
+}
+
+.game-status {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.reset-button {
+    margin-top: 16px;
+    padding: 8px 16px;
+    background-color: #252523;
+    color: #e7eddf;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
 }

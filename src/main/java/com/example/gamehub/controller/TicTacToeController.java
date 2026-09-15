@@ -1,0 +1,94 @@
+package com.example.gamehub.controller;
+
+import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+@Controller
+public class TicTacToeController {
+
+  private static final String BOARD_KEY = "ticTacToeBoard";
+  private static final String TURN_KEY = "ticTacToeTurn";
+
+  @GetMapping("/game/tictactoe")
+  public ModelAndView showBoard(HttpSession session) {
+    return buildBoardView(session);
+  }
+
+  @PostMapping("/game/tictactoe/move")
+  public ModelAndView makeMove(@RequestParam int cellIndex, HttpSession session) {
+    List<String> board = getOrCreateBoard(session);
+    String currentPlayer = getOrCreateTurn(session);
+
+    if (board.get(cellIndex).isEmpty() && checkWinner(board) == null) {
+      board.set(cellIndex, currentPlayer);
+      session.setAttribute(BOARD_KEY, board);
+
+      String nextPlayer = currentPlayer.equals("X") ? "O" : "X";
+      session.setAttribute(TURN_KEY, nextPlayer);
+    }
+
+    return buildBoardView(session);
+  }
+
+  @PostMapping("/game/tictactoe/reset")
+  public ModelAndView resetBoard(HttpSession session) {
+    session.removeAttribute(BOARD_KEY);
+    session.removeAttribute(TURN_KEY);
+    return buildBoardView(session);
+  }
+
+  private ModelAndView buildBoardView(HttpSession session) {
+    List<String> board = getOrCreateBoard(session);
+
+    ModelAndView modelAndView = new ModelAndView("tictactoe");
+    modelAndView.addObject("gameName", "tictactoe");
+    modelAndView.addObject("board", board);
+    modelAndView.addObject("currentPlayer", getOrCreateTurn(session));
+    modelAndView.addObject("winner", checkWinner(board));
+    return modelAndView;
+  }
+
+  private List<String> getOrCreateBoard(HttpSession session) {
+    @SuppressWarnings("unchecked")
+    List<String> board = (List<String>) session.getAttribute(BOARD_KEY);
+    if (board == null) {
+      board = new ArrayList<>(Arrays.asList("", "", "", "", "", "", "", "", ""));
+      session.setAttribute(BOARD_KEY, board);
+    }
+    return board;
+  }
+
+  private String getOrCreateTurn(HttpSession session) {
+    String turn = (String) session.getAttribute(TURN_KEY);
+    if (turn == null) {
+      turn = "X";
+      session.setAttribute(TURN_KEY, turn);
+    }
+    return turn;
+  }
+
+  private String checkWinner(List<String> board) {
+    int[][] winningLines = {
+      {0, 1, 2}, {3, 4, 5}, {6, 7, 8}, // rows
+      {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, // columns
+      {0, 4, 8}, {2, 4, 6} // diagonals
+    };
+
+    for (int[] line : winningLines) {
+      String first = board.get(line[0]);
+      if (!first.isEmpty()
+          && first.equals(board.get(line[1]))
+          && first.equals(board.get(line[2]))) {
+        return first;
+      }
+    }
+    return null;
+  }
+}
