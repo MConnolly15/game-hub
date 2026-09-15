@@ -7,17 +7,39 @@
 </head>
 <body>
 
+
 <header>
   <a href="">
+    <span class="logo"><img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBIjgAA0GNHh_JvdefzBWpCGdzJq8Wd3bFHfd4pZc-GA&s=10" alt="GH"></span>
     <span class="header_title">Game Hive</span>
   </a>
+
   <div class="site-header-user">
     <span th:text="${username}">Username</span>
+    <button class="">
+      <img class="user_image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlbbdPqXU3wwsJQPwkgU42saoIIg22ct8rNcFV_RU6PA&s=10" alt="Icon"></button>
   </div>
+
 </header>
 
 <nav class="navbar">
-  <a href="/" class="navbar-button">Home</a>
+  <a href="" class="navbar-button">Home</a>
+  <a href="" class="navbar-button">Account</a>
+  <a href="" class="navbar-button">FAQs</a>
+
+  <form th:action="@{/logout}" method="post" class="logout-form">
+
+    <input
+            type="hidden"
+            th:name="${_csrf.parameterName}"
+            th:value="${_csrf.token}">
+
+    <button type="submit" class="navbar-button">
+      Logout
+    </button>
+
+  </form>
+
 </nav>
 
 <main>
