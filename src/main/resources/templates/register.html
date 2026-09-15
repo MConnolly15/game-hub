@@ -101,6 +101,12 @@
         .login-link a:hover {
             text-decoration: underline;
         }
+        .error-message {
+            color: #dc2626;
+            font-size: 14px;
+            margin-top: -10px;
+            margin-bottom: 12px;
+        }
     </style>
 </head>
 
@@ -125,13 +131,22 @@
                 th:name="${_csrf.parameterName}"
                 th:value="${_csrf.token}">
 
-        <label for="name">Name</label>
+        <label for="username">Username</label>
         <input
-                id="name"
-                name="name"
+                id="username"
+                name="username"
                 type="text"
-                placeholder="Your name"
+                minlength="3"
+                maxlength="16"
+                pattern="[A-Za-z0-9_]+"
+                placeholder="Your Username"
                 required>
+
+        <p
+            class="error-message"
+            th:if="${usernameError}"
+            th:text="${usernameError}">
+        </p>
 
         <label for="email">Email</label>
         <input
