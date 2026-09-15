@@ -3,10 +3,18 @@
 -----------------------------------*/
 
 body {
+    height: 100%;
+    background-color: #ffc544;
+    color: #252523;
     margin: 0;
-    background-color: khaki;
-    color: #000000;
-    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: 'Trebuchet MS', sans-serif;
+}
+
+main {
+    flex: 1;
 }
 
 
@@ -15,9 +23,8 @@ body {
 -----------------------------------*/
 
 header {
-    background-color: #e4d96b;
-    border-bottom: 1px solid #000000;
-
+    background-color: #fcba06;
+    border-bottom: 1px solid;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -26,21 +33,24 @@ header {
     padding: 0 20px;
 }
 
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 7px;
+    justify-content: center;
+}
+
 header a {
     display: flex;
     align-items: center;
     gap: 10px;
-
-    color: #000000;
-    text-decoration: none;
-}
-
-.logo {
-    width: 50px;
-    height: 50px;
-
-    object-fit: cover;
-    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    border-radius: 7px;
+    justify-content: center;
 }
 
 .header_title {
@@ -74,50 +84,65 @@ header a {
 /*----------------------------------
     NavBar CSS
 -----------------------------------*/
+/*.navbar {*/
+/*    width: 100%;*/
+/*    background-color: #e6d636;*/
+/*    border-bottom: 1px solid #e4d96b;*/
+/*    color: white;*/
+/*    height: 50px;*/
+/*}*/
 
 .navbar {
     width: 100%;
-    background-color: #e6d636;
-    border-bottom: 1px solid #c8b900;
+    background-color: #fcba06;
+    color: white;
+    height: 50px;
 
     display: flex;
     align-items: center;
     gap: 18px;
 
-    padding: 12px 20px;
+/*    padding: 12px 20px;*/
 
-    box-sizing: border-box;
+/*    box-sizing: border-box;*/
+/*}*/
+
+/*.navbar-button {*/
+/*    color: #000000;*/
+/*    font-size: 16px;*/
+/*    font-family: inherit;*/
+
+/*    text-decoration: none;*/
+
+/*    background: none;*/
+/*    border: none;*/
+
+/*    padding: 6px 8px;*/
+/*    border-radius: 5px;*/
+
+/*    cursor: pointer;*/
+/*}*/
+
+/*.navbar-button:hover {*/
+/*    background-color: rgba(255, 255, 255, 0.3);*/
+/*}*/
+
+/*.logout-form {*/
+/*    margin: 0;*/
+/*    padding: 0;*/
+/*}*/
+
+footer {
+    background-color: #fcba06;
 }
-
-.navbar-button {
-    color: #000000;
-    font-size: 16px;
-    font-family: inherit;
-
-    text-decoration: none;
-
-    background: none;
-    border: none;
-
-    padding: 6px 8px;
-    border-radius: 5px;
-
-    cursor: pointer;
-}
-
-.navbar-button:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-}
-
-.logout-form {
-    margin: 0;
-    padding: 0;
-}
-
 
 /*----------------------------------
     Hexagons CSS
 -----------------------------------*/
+
+.game_wrapper {
+    container-type: inline-size;
+}
 
 @property --_c {
     syntax: "<number>";
@@ -133,6 +158,8 @@ header a {
     gap: var(--g);
     flex-wrap: wrap;
     container-type: inline-size;
+
+    padding: 20px 20px calc(var(--s) / (4 * cos(30deg))) 20px;
 }
 
 .game_section > * {
@@ -206,8 +233,7 @@ header a {
     transform: translate(-50%, -50%);
 
     margin: 0;
-
-    color: white;
+    color: #e7eddf;
     font-size: 32px;
 
     background-color: rgba(0, 0, 0, 0.65);
@@ -220,22 +246,38 @@ header a {
 }
 
 
+
+/*----------------------------------
+    Colour Palette Hex Values
+    Black - #252523
+    White - #e7eddf
+    Dark yellow - #faa303
+    medium Yellow (Header and footer) - #fcba06
+    light yellow (background) - #ffc544
+    Brown - #5d2d00
+-----------------------------------*/
 /*----------------------------------
     Footer CSS
 -----------------------------------*/
 
 footer {
-    background-color: #e4d96b;
+    background-color: #fcba06;
 
     margin-top: 40px;
     padding: 30px 20px;
 
-    border-top: 1px solid #c8b900;
+    border-top: 1px solid #fcba06;
 }
 
-.site-footer_column {
+.site-footer__column {
     max-width: 1000px;
     margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding: 32px 24px;
 }
 
 .site-footer__logo {
@@ -245,12 +287,32 @@ footer {
     text-decoration: none;
 }
 
-.site-footer_column ul {
-    padding-left: 20px;
+.site-footer__links h3 {
+    margin: 0 0 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #252523;
+    text-align: right;
+}
+
+.site-footer__links ul {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 .site-footer_column a {
-    color: #000000;
+    color: #252523;
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+.site-footer__links a:hover {
+    color: #e7eddf;
 }
 
 
