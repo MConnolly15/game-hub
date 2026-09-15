@@ -5,58 +5,16 @@
     <title>Game Hive</title>
     <link rel="stylesheet" href="/homepage.css">
     <link rel="stylesheet" th:href="@{/navbar.css}">
-
-    <meta
-            name="viewport"
-            content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 
 <body>
 
 
-
-<header>
-    <!--    wire to navbar:-->
     <div th:replace="~{fragments/navbar :: navbar}"></div>
-<!--    <a href="">-->
-<!--        <span class="logo"><img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBIjgAA0GNHh_JvdefzBWpCGdzJq8Wd3bFHfd4pZc-GA&s=10"></span>-->
-<!--        <span class="header_title">Game Hive</span>-->
-<!--    </a>-->
-
-<!--    <div class="site-header-user">-->
-<!--        <span>Katie Brown</span>-->
-<!--        <button class="">-->
-<!--            <img class="user_image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlbbdPqXU3wwsJQPwkgU42saoIIg22ct8rNcFV_RU6PA&s=10"></button>-->
-<!--    </div>-->
-
-</header>
 
 
-<nav class="navbar">
-    <a href="" class="navbar-button">Home</a>
-    <a href="" class="navbar-button">Account</a>
-    <a href="" class="navbar-button">FAQs</a>
-    
-    <form th:action="@{/logout}" method="post" class="logout-form">
-
-
-        <input
-                type="hidden"
-                th:name="${_csrf.parameterName}"
-                th:value="${_csrf.token}">
-
-        <button type="submit" class="navbar-button">
-            Logout
-        </button>
-
-    </form>
-
-</nav>
-
-<!--Main Body-->
-
-
+<!-- Main Body -->
 <div class="game_section">
     <div class="game_hexagon"> <h3>Wordle</h3>
         <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/Wordle_196_example.svg/960px-Wordle_196_example.svg.png?utm_source=en.wikipedia.org&utm_campaign=index&utm_content=thumbnail" alt="Wordle">
@@ -76,15 +34,11 @@
     <div class="game_hexagon">Hexagon</div>
     <div class="game_hexagon">Hexagon</div>
     <div class="game_hexagon">Hexagon</div>
-    <div class="game_hexagon">Hexagon</div>
-
 </div>
 
 <br><br>
 <footer>
-
     <div class="site-footer_column">
-        <a href="#" class="site-footer__logo">Game Hive</a>
         <h3>Helpful Links</h3>
         <ul>
             <li><a href="#">About the Team</a></li>
@@ -92,7 +46,6 @@
             <li><a href="#">Contact Us</a></li>
         </ul>
     </div>
-
 </footer>
 
 </body>

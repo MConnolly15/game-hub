@@ -84,40 +84,42 @@ header a {
 /*    color: white;*/
 /*    height: 50px;*/
 /*}*/
-.navbar{
-    display: flex;
-    align-items: center;
-    gap: 18px;
 
-    padding: 12px 20px;
+/*commented out!:*/
+/*.navbar{*/
+/*    display: flex;*/
+/*    align-items: center;*/
+/*    gap: 18px;*/
 
-    box-sizing: border-box;
-}
+/*    padding: 12px 20px;*/
 
-.navbar-button {
-    color: #000000;
-    font-size: 16px;
-    font-family: inherit;
+/*    box-sizing: border-box;*/
+/*}*/
 
-    text-decoration: none;
+/*.navbar-button {*/
+/*    color: #000000;*/
+/*    font-size: 16px;*/
+/*    font-family: inherit;*/
 
-    background: none;
-    border: none;
+/*    text-decoration: none;*/
 
-    padding: 6px 8px;
-    border-radius: 5px;
+/*    background: none;*/
+/*    border: none;*/
 
-    cursor: pointer;
-}
+/*    padding: 6px 8px;*/
+/*    border-radius: 5px;*/
 
-.navbar-button:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-}
+/*    cursor: pointer;*/
+/*}*/
 
-.logout-form {
-    margin: 0;
-    padding: 0;
-}
+/*.navbar-button:hover {*/
+/*    background-color: rgba(255, 255, 255, 0.3);*/
+/*}*/
+
+/*.logout-form {*/
+/*    margin: 0;*/
+/*    padding: 0;*/
+/*}*/
 
 
 /*----------------------------------

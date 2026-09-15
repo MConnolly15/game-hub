@@ -1,22 +1,28 @@
 body {
-    padding-top: 60px;
+    /*padding-top: 60px;*/
+    padding-top: 110px; /* 80px navbar height + 30px gap */
 }
-.navbar {
+    .navbar {
 
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     z-index: 1000;
+    background-color: #fcba06;
+    color: #252523;
 
     /*ul{*/
     /*   */
     /*}*/
+    .navbar-toggle {
+        display: none;
+    }
     .container{
         display: flex;
         /*width: 100%;*/
         justify-content: space-between;
-        padding: 0 40px;
+        padding: 5px 20px;
         font: bold 16px/1.5 "Helvetica Neue",Helvetica,Arial,sans-serif;
         /*box-sizing: border-box;*/
         /*list-style: none;*/
@@ -32,6 +38,7 @@ body {
             list-style: none;
             padding-inline-start: 0;
         }
+
         .left-side{
             padding-inline-start: 0;
             display: flex;
@@ -39,6 +46,26 @@ body {
             list-style: none;
 
         }
+        .navbar-button{
+            display: inline-block;
+            color: #252523;
+            font: inherit;
+            font-weight: bold;
+            text-decoration: none;
+            padding: 5px 20px;
+            background-color: #faa303;
+
+            /*background-color: #faa303;*/
+            /*border: 2px solid #5d2d00;*/
+            /*padding: 10px 22px;*/
+            /*border-radius: 8px;*/
+
+            cursor: pointer;
+
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+        }
+
     }
 
     @media (max-width: 600px) {
@@ -64,15 +91,3 @@ body {
     }
 }
 
-
-@media (max-width: 600px) {
-    .navbar {
-        flex-wrap: wrap;
-        position: relative;
-
-        .navbar-toggle {
-            display: block;
-            margin-left: auto;
-        }
-    }
-}
