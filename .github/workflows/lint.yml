@@ -9,39 +9,8 @@ permissions:
   contents: read
 
 jobs:
-  changes:
-    name: Detect changes
-    runs-on: ubuntu-latest
-    outputs:
-      terraform: ${{ steps.filter.outputs.terraform }}
-      java: ${{ steps.filter.outputs.java }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Filter changed paths
-        uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            terraform:
-              - 'terraform/**'
-
-            java:
-              - 'src/**'
-              - 'build.gradle'
-              - 'settings.gradle'
-              - 'gradle.properties'
-              - 'gradle/**'
-              - 'gradlew'
-              - 'gradlew.bat'
-              - 'config/checkstyle/**'
-
   terraform-lint:
     name: Terraform Lint
-    needs: changes
-    if: needs.changes.outputs.terraform == 'true'
     runs-on: ubuntu-latest
 
     defaults:
@@ -81,8 +50,6 @@ jobs:
 
   java:
     name: Java
-    needs: changes
-    if: needs.changes.outputs.java == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -112,12 +79,11 @@ jobs:
 
   terraform:
     name: Terraform AWS Login Check
-    needs: [changes, terraform-lint, java]
+    needs: [terraform-lint, java]
     if: |
-      needs.changes.outputs.terraform == 'true' &&
       github.event_name == 'push' &&
       needs.terraform-lint.result == 'success' &&
-      (needs.java.result == 'success' || needs.java.result == 'skipped')
+      needs.java.result == 'success'
     runs-on: ubuntu-latest
 
     defaults:
