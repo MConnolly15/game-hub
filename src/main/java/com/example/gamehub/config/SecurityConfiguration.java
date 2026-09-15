@@ -14,18 +14,23 @@ public class SecurityConfiguration {
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
     http.authorizeHttpRequests(
-                    auth ->
-                            auth.requestMatchers(
-                                            "/", "/login", "/register",
-                                            "/homepage.css", "/navbar.css",
-                                            "/css/**", "/js/**", "/images/**")
-                                    .permitAll()
-                                    .requestMatchers("/leaderboard", "/profile")
-                                    .authenticated()
-                                    .anyRequest()
-                                    .authenticated())
-            .formLogin(form -> form.loginPage("/login").permitAll())
-            .logout(logout -> logout.logoutSuccessUrl("/").permitAll());
+            auth ->
+                auth.requestMatchers(
+                        "/",
+                        "/login",
+                        "/register",
+                        "/homepage.css",
+                        "/navbar.css",
+                        "/css/**",
+                        "/js/**",
+                        "/images/**")
+                    .permitAll()
+                    .requestMatchers("/leaderboard", "/profile")
+                    .authenticated()
+                    .anyRequest()
+                    .authenticated())
+        .formLogin(form -> form.loginPage("/login").permitAll())
+        .logout(logout -> logout.logoutSuccessUrl("/").permitAll());
 
     return http.build();
   }
@@ -36,19 +41,19 @@ public class SecurityConfiguration {
   }
 }
 
-//this was update to the above to make sure only logged in users are able to see certain pages!
+// this was update to the above to make sure only logged in users are able to see certain pages!
 
-//package com.example.gamehub.config;
+// package com.example.gamehub.config;
 //
-//import org.springframework.context.annotation.Bean;
-//import org.springframework.context.annotation.Configuration;
-//import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-//import org.springframework.security.crypto.password.PasswordEncoder;
-//import org.springframework.security.web.SecurityFilterChain;
+// import org.springframework.context.annotation.Bean;
+// import org.springframework.context.annotation.Configuration;
+// import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+// import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+// import org.springframework.security.crypto.password.PasswordEncoder;
+// import org.springframework.security.web.SecurityFilterChain;
 //
-//@Configuration
-//public class SecurityConfiguration {
+// @Configuration
+// public class SecurityConfiguration {
 //
 //  @Bean
 //  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -69,4 +74,4 @@ public class SecurityConfiguration {
 //  public PasswordEncoder passwordEncoder() {
 //    return new BCryptPasswordEncoder();
 //  }
-//}
+// }
