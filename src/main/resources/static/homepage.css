@@ -10,6 +10,7 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    font-family: 'Trebuchet MS', sans-serif;
 }
 
 main {
@@ -30,6 +31,16 @@ header {
 
     min-height: 90px;
     padding: 0 20px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 7px;
+    justify-content: center;
 }
 
 header a {
@@ -73,54 +84,46 @@ header a {
 /*----------------------------------
     NavBar CSS
 -----------------------------------*/
-/*.navbar {*/
-/*    width: 100%;*/
-/*    background-color: #e6d636;*/
-/*    border-bottom: 1px solid #e4d96b;*/
-/*    color: white;*/
-/*    height: 50px;*/
-/*}*/
 
 .navbar {
     width: 100%;
     background-color: #fcba06;
     color: white;
     height: 50px;
-}
 
     display: flex;
     align-items: center;
     gap: 18px;
 
-/*    padding: 12px 20px;*/
+    padding: 12px 20px;
 
-/*    box-sizing: border-box;*/
-/*}*/
+    box-sizing: border-box;
+}
 
-/*.navbar-button {*/
-/*    color: #000000;*/
-/*    font-size: 16px;*/
-/*    font-family: inherit;*/
+.navbar-button {
+    color: #000000;
+    font-size: 16px;
+    font-family: inherit;
 
-/*    text-decoration: none;*/
+    text-decoration: none;
 
-/*    background: none;*/
-/*    border: none;*/
+    background: none;
+    border: none;
 
-/*    padding: 6px 8px;*/
-/*    border-radius: 5px;*/
+    padding: 6px 8px;
+    border-radius: 5px;
 
-/*    cursor: pointer;*/
-/*}*/
+    cursor: pointer;
+}
 
-/*.navbar-button:hover {*/
-/*    background-color: rgba(255, 255, 255, 0.3);*/
-/*}*/
+.navbar-button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
 
-/*.logout-form {*/
-/*    margin: 0;*/
-/*    padding: 0;*/
-/*}*/
+.logout-form {
+    margin: 0;
+    padding: 0;
+}
 
 footer {
     background-color: #fcba06;
@@ -149,8 +152,7 @@ footer {
     flex-wrap: wrap;
     container-type: inline-size;
 
-    padding-top: 20px;
-    padding-bottom: calc(var(--s)/(4*cos(30deg)));
+    padding: 20px 20px calc(var(--s) / (4 * cos(30deg))) 20px;
 }
 
 .game_section > * {
@@ -252,17 +254,23 @@ footer {
 -----------------------------------*/
 
 footer {
-    background-color: #e4d96b;
+    background-color: #fcba06;
 
     margin-top: 40px;
     padding: 30px 20px;
 
-    border-top: 1px solid #c8b900;
+    border-top: 1px solid #fcba06;
 }
 
-.site-footer_column {
+.site-footer__column {
     max-width: 1000px;
     margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding: 32px 24px;
 }
 
 .site-footer__logo {
@@ -272,12 +280,32 @@ footer {
     text-decoration: none;
 }
 
-.site-footer_column ul {
-    padding-left: 20px;
+.site-footer__links h3 {
+    margin: 0 0 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #252523;
+    text-align: right;
+}
+
+.site-footer__links ul {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 .site-footer_column a {
-    color: #000000;
+    color: #252523;
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+.site-footer__links a:hover {
+    color: #e7eddf;
 }
 
 
