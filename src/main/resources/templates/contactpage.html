@@ -2,11 +2,16 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Tic Tac Toe - Game Hive</title>
-  <link rel="stylesheet" href="/gamepage.css">
-</head>
-<body>
+  <title>Game Hive - Contact Us</title>
+  <link rel="stylesheet" href="/staticpage.css">
 
+  <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+</head>
+
+<body>
 
 <header>
   <a href="">
@@ -42,36 +47,18 @@
 
 </nav>
 
+<!--Main Body-->
 <main>
-  <div class="game_page_wrapper">
-    <a href="/" class="back-link">&larr; Back to all games</a>
-
-    <h1>Tic Tac Toe</h1>
-    <p th:if="${winner != null}" th:text="${winner} + ' wins!'" class="game-status"></p>
-    <p th:if="${winner == null}" th:text="'Turn: ' + ${currentPlayer}" class="game-status"></p>
-
-    <div class="tictactoe_board">
-      <form th:each="cell, iter : ${board}"
-            th:action="@{/game/tictactoe/move}"
-            method="post"
-            class="tictactoe_cell_form">
-        <input type="hidden" name="cellIndex" th:value="${iter.index}">
-        <button type="submit"
-                class="tictactoe_cell"
-                th:text="${cell}"
-                th:disabled="${!cell.isEmpty()} or ${winner != null}"></button>
-      </form>
-    </div>
-
-    <form th:action="@{/game/tictactoe/reset}" method="post">
-      <button type="submit" class="reset-button">Reset Game</button>
-    </form>
-  </div>
+  <br><br>
 </main>
+<!--footer-->
+
 
 <footer>
+
   <div class="site-footer__column">
     <a href="#" class="site-footer__logo">Game Hive</a>
+
     <nav class="site-footer__links">
       <h3>Helpful Links</h3>
       <ul>
@@ -81,6 +68,7 @@
       </ul>
     </nav>
   </div>
+
 </footer>
 
 </body>
