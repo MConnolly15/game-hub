@@ -1,0 +1,85 @@
+name: Terraform
+
+on:
+  push:
+    branches-ignore: [main]
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: read
+
+jobs:
+  provision:
+    name: Create/update branch database
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: terraform
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ vars.AWS_SECRET_ACCESS_KEY }}
+      TF_VAR_branch_name: ${{ github.ref_name }}
+      TF_VAR_ec2_ssh_public_key: "unused-branch-db-only"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "1.9.8"
+
+      - name: Terraform init
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
+            -backend-config="key=game-hub/${{ github.ref_name }}/terraform.tfstate"
+
+      - name: Terraform apply
+        run: terraform apply -auto-approve -input=false
+
+      - name: Run Flyway migrations against the branch database
+        run: |
+          cd ..
+          ./gradlew flywayMigrate \
+            -Pflyway.url="jdbc:postgresql://$(terraform -chdir=terraform output -raw rds_endpoint):$(terraform -chdir=terraform output -raw rds_port)/$(terraform -chdir=terraform output -raw rds_db_name)" \
+            -Pflyway.user="$(terraform -chdir=terraform output -raw rds_username)" \
+            -Pflyway.password="$(terraform -chdir=terraform output -raw branch_db_password)"
+
+  destroy:
+    name: Destroy branch database
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: terraform
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ vars.AWS_SECRET_ACCESS_KEY }}
+      TF_VAR_branch_name: ${{ github.head_ref }}
+      TF_VAR_ec2_ssh_public_key: "unused-branch-db-only"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "1.9.8"
+
+      - name: Terraform init
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
+            -backend-config="key=game-hub/${{ github.head_ref }}/terraform.tfstate"
+
+      - name: Terraform destroy
+        run: terraform destroy -auto-approve -input=false

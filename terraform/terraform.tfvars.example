@@ -1,3 +1,14 @@
 aws_region = "eu-west-2"
 environment = "dev"
 project_name = "Game Hive"
+
+app_port = 8080
+
+db_engine_version   = "16.4"
+db_instance_class = "db.t3.micro"
+db_allocated_store = 20
+db_storage_type = "gp3"
+db_master_username = "postgres"
+db_name = "game_hub_dev"
+db_main_publicly_accessible = false
+db_main_multi_az = false
