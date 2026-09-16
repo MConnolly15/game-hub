@@ -7,12 +7,12 @@ data "aws_vpc" "default" {
 
 data "aws_subnets" "default" {
   filter {
-    name = "vpc-id"
+    name   = "vpc-id"
     values = [data.aws_vpc.default.id]
   }
 }
 
 locals {
-  is_main = var.branch_name == "main"
+  is_main     = var.branch_name == "main"
   branch_slug = lower(replace(var.branch_name, "/[^a-zA-Z0-9]+/", "-"))
 }

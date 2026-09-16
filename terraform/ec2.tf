@@ -1,23 +1,23 @@
 data "aws_ami" "al2023" {
-    most_recent = true
-    owners = ["amazon"]
+  most_recent = true
+  owners      = ["amazon"]
 
-    filter {
-      name = "name"
-      values = ["al2023-ami-*-x86_64"]
-    }
+  filter {
+    name   = "name"
+    values = ["al2023-ami-*-x86_64"]
+  }
 
-    filter {
-      name = "virtualization-type"
-      values = ["hvm"]
-    }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
 }
 
 resource "aws_key_pair" "app" {
-    count = local.is_main ? 1 : 0
+  count = local.is_main ? 1 : 0
 
-    key_name = "${var.project_name}-${var.environment}"
-    public_key = var.ec2_ssh_public_key
+  key_name   = "${var.project_name}-${var.environment}"
+  public_key = var.ec2_ssh_public_key
 }
 
 resource "aws_instance" "app" {
