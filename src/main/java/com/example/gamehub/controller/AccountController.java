@@ -44,4 +44,9 @@ public class AccountController {
 
     return "redirect:/login";
   }
+
+  @GetMapping("/profile")
+  public String showProfilePage(){
+    return "profile";
+  }
 }
