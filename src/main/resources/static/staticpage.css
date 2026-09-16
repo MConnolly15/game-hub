@@ -1,0 +1,356 @@
+/*----------------------------------
+    Main Body CSS
+-----------------------------------*/
+
+body {
+    height: 100%;
+    background-color: #ffc544;
+    color: #252523;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: 'Trebuchet MS', sans-serif;
+}
+
+main {
+    flex: 1;
+}
+
+
+/*----------------------------------
+    Header CSS
+-----------------------------------*/
+
+header {
+    background-color: #fcba06;
+    border-bottom: 1px solid;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    min-height: 90px;
+    padding: 0 20px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 7px;
+    justify-content: center;
+}
+
+header a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 7px;
+    justify-content: center;
+}
+
+.header_title {
+    color: #000000;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.site-header-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.site-header-user button {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+.user_image {
+    width: 40px;
+    height: 40px;
+
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+
+/*----------------------------------
+    NavBar CSS
+-----------------------------------*/
+
+.navbar {
+    width: 100%;
+    background-color: #fcba06;
+    color: white;
+    height: 50px;
+
+    display: flex;
+    align-items: center;
+    gap: 18px;
+
+    padding: 12px 20px;
+
+    box-sizing: border-box;
+}
+
+.navbar-button {
+    color: #000000;
+    font-size: 16px;
+    font-family: inherit;
+
+    text-decoration: none;
+
+    background: none;
+    border: none;
+
+    padding: 6px 8px;
+    border-radius: 5px;
+
+    cursor: pointer;
+}
+
+.navbar-button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.logout-form {
+    margin: 0;
+    padding: 0;
+}
+
+footer {
+    background-color: #fcba06;
+}
+
+/*----------------------------------
+    Hexagons CSS
+-----------------------------------*/
+
+.team_wrapper {
+    container-type: inline-size;
+}
+
+@property --_c {
+    syntax: "<number>";
+    initial-value: 0;
+    inherits: true;
+}
+
+.team_section {
+    --s: 250px;
+    --g: 10px;
+
+    display: flex;
+    gap: var(--g);
+    flex-wrap: wrap;
+    container-type: inline-size;
+
+    padding: 20px 20px calc(var(--s) / (4 * cos(30deg))) 20px;
+}
+
+.team_section > * {
+    width: var(--s);
+    aspect-ratio: cos(30deg);
+
+    border-radius: 50% / 25%;
+    corner-shape: bevel;
+
+    overflow: hidden;
+
+    margin-bottom: calc(var(--s) / (-4 * cos(30deg)));
+
+    --_n: round(
+            down,
+            (100cqw + var(--g)) / (var(--s) + var(--g))
+    );
+
+    --_m: round(
+            down,
+            (100cqw - (var(--s) - var(--g)) / 2) /
+            (var(--s) + var(--g))
+    );
+
+    --_i: calc(
+            (sibling-index() - 1 + var(--_m)) /
+            (var(--_n) + var(--_m))
+    );
+
+    --_c: mod(var(--_i), 1);
+
+    margin-left: if(
+    style(--_c: 0):
+    calc((var(--s) + var(--g)) / 2);
+    else: 0;
+);
+}
+
+.team_section div {
+    display: grid;
+    place-content: center;
+
+    border: 10px solid;
+
+    box-sizing: border-box;
+
+    font: bold 28px system-ui, sans-serif;
+}
+
+.team_hexagon {
+    position: relative;
+}
+
+.team_hexagon img {
+    width: 120%;
+    height: 120%;
+
+    object-fit: cover;
+
+    display: block;
+
+    position: absolute;
+}
+
+.team_hexagon h3 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    color: #e7eddf;
+    font-size: 32px;
+    background-color: rgba(0, 0, 0, 0.65);
+    border-radius: 8px;
+    padding: 8px 16px;
+    z-index: 2;
+}
+
+.team_hexagon a {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    color: #e7eddf;
+    font-size: 32px;
+    background-color: rgba(0, 0, 0, 0.65);
+    border-radius: 8px;
+    padding: 8px 16px;
+    z-index: 2;
+    text-decoration: none;
+}
+
+
+
+/*----------------------------------
+    Colour Palette Hex Values
+    Black - #252523
+    White - #e7eddf
+    Dark yellow - #faa303
+    medium Yellow (Header and footer) - #fcba06
+    light yellow (background) - #ffc544
+    Brown - #5d2d00
+-----------------------------------*/
+/*----------------------------------
+    Footer CSS
+-----------------------------------*/
+
+footer {
+    background-color: #fcba06;
+
+    margin-top: 40px;
+    padding: 30px 20px;
+
+    border-top: 1px solid #fcba06;
+}
+
+.site-footer__column {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding: 32px 24px;
+}
+
+.site-footer__logo {
+    color: #000000;
+    font-size: 22px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.site-footer__links h3 {
+    margin: 0 0 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #252523;
+    text-align: right;
+}
+
+.site-footer__links ul {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.site-footer_column a {
+    color: #252523;
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+.site-footer__links a:hover {
+    color: #e7eddf;
+}
+
+
+/*----------------------------------
+    Mobile
+-----------------------------------*/
+
+@media (max-width: 600px) {
+
+    header {
+        padding: 0 12px;
+    }
+
+    .header_title {
+        font-size: 18px;
+    }
+
+    .site-header-user span {
+        display: none;
+    }
+
+    .navbar {
+        gap: 6px;
+        padding: 10px;
+    }
+
+    .navbar-button {
+        font-size: 14px;
+        padding: 6px;
+    }
+
+    .team_section {
+        --s: 160px;
+        --g: 6px;
+    }
+
+    .team_hexagon h3 {
+        font-size: 22px;
+    }
+}
