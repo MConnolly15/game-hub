@@ -47,8 +47,9 @@
     <a href="/" class="back-link">&larr; Back to all games</a>
 
     <h1>Tic Tac Toe</h1>
-    <p th:if="${winner != null}" th:text="${winner} + ' wins!'" class="game-status"></p>
-    <p th:if="${winner == null}" th:text="'Turn: ' + ${currentPlayer}" class="game-status"></p>
+    <p th:if="${winner != null}" th:text="${winner} + ' wins!'" class="tictactoe-game-status-over"></p>
+    <p th:if="${winner == null and isDraw}" th:text="'Its a draw!'" class="tictactoe-game-status-over"></p>
+    <p th:if="${winner == null and !isDraw}" th:text="'Turn: ' + ${currentPlayer}" class="tictactoe-game-status"></p>
 
     <div class="tictactoe_board">
       <form th:each="cell, iter : ${board}"
@@ -64,7 +65,7 @@
     </div>
 
     <form th:action="@{/game/tictactoe/reset}" method="post">
-      <button type="submit" class="reset-button">Reset Game</button>
+      <button type="submit" class="tictactoe-reset-button">Reset Game</button>
     </form>
   </div>
 </main>

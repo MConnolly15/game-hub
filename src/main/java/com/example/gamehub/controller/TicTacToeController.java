@@ -46,12 +46,15 @@ public class TicTacToeController {
 
   private ModelAndView buildBoardView(HttpSession session) {
     List<String> board = getOrCreateBoard(session);
+    String winner = checkWinner(board);
+    boolean isDraw = winner == null && isBoardFull(board);
 
     ModelAndView modelAndView = new ModelAndView("tictactoe");
     modelAndView.addObject("gameName", "tictactoe");
     modelAndView.addObject("board", board);
     modelAndView.addObject("currentPlayer", getOrCreateTurn(session));
     modelAndView.addObject("winner", checkWinner(board));
+    modelAndView.addObject("isDraw", isDraw);
     return modelAndView;
   }
 
@@ -90,5 +93,9 @@ public class TicTacToeController {
       }
     }
     return null;
+  }
+
+  private boolean isBoardFull(List<String> board) {
+    return board.stream().noneMatch(String::isEmpty);
   }
 }
