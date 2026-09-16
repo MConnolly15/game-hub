@@ -16,6 +16,9 @@ public class UserService {
     }
 
     public void updateUsername(String email, String newUsername){
+        if(newUsername.isBlank()){
+            throw new IllegalArgumentException("Username cannot be blank");
+        }
         User user = userRepository.findByEmail(email).orElseThrow();
         user.setUsername(newUsername);
     }
@@ -28,5 +31,6 @@ public class UserService {
         User user = userRepository.findByEmail(email).orElseThrow();
         user.setPassword(newPassword);
     }
+
 }
 
