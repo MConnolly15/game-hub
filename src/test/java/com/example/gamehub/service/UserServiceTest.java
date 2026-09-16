@@ -57,19 +57,33 @@ class UserServiceTest {
     }
 
     //unhappy paths?:
+    // in these we do not need the line with User existingUser because we never reach this point, if it fails for being
+    //empty, too short etc it never looks for the user.
 
     @Test
     void rejectsBlankUsername() {
-        //create user:
-        User existingUser = new User("daphna","daphna@example.com", "hashedPassword");
-        //mock find by email to return user:  - did not need this at the end because it
-        // throws and exception after the if statement so it never gets to find by email
-//        when(userRepository.findByEmail("daphna@example.com"))
-//                .thenReturn(java.util.Optional.of(existingUser));
+
+
         //creating instance of the user service:
         UserService userService = new UserService(userRepository);
-        //we expect to throw an illigalargumentexeption when we call update username with blank username:
+        //we expect to throw an IllegalArgumentException when we call updateUsername with a blank username:
         assertThrows(IllegalArgumentException.class, () ->
                 userService.updateUsername("daphna@example.com", ""));
+    }
+
+    @Test
+    void rejectsUsernameThatIsTooShort() {
+        UserService userService = new UserService(userRepository);
+
+        assertThrows(IllegalArgumentException.class, () ->
+                userService.updateUsername("daphna@example.com", "da"));
+    }
+
+
+    @Test
+    void rejectsUsernameThatIsTooLong() {
+        UserService userService = new UserService(userRepository);
+        assertThrows(IllegalArgumentException.class, () ->
+                userService.updateUsername("daphna@example.com", "daaaaaaaaaaaaaaaa"));
     }
 }

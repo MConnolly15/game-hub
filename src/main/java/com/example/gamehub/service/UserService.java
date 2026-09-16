@@ -18,6 +18,10 @@ public class UserService {
     public void updateUsername(String email, String newUsername){
         if(newUsername.isBlank()){
             throw new IllegalArgumentException("Username cannot be blank");
+        } else if (newUsername.length() < 3) {
+            throw new IllegalArgumentException("Username cannot be shorter than 3 characters");
+        } else if (newUsername.length() > 16) {
+            throw new IllegalArgumentException("Username cannot be longer than 16 characters");
         }
         User user = userRepository.findByEmail(email).orElseThrow();
         user.setUsername(newUsername);
