@@ -9,39 +9,8 @@ permissions:
   contents: read
 
 jobs:
-  changes:
-    name: Detect changes
-    runs-on: ubuntu-latest
-    outputs:
-      terraform: ${{ steps.filter.outputs.terraform }}
-      java: ${{ steps.filter.outputs.java }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Filter changed paths
-        uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            terraform:
-              - 'terraform/**'
-
-            java:
-              - 'src/**'
-              - 'build.gradle'
-              - 'settings.gradle'
-              - 'gradle.properties'
-              - 'gradle/**'
-              - 'gradlew'
-              - 'gradlew.bat'
-              - 'config/checkstyle/**'
-
-  terraform:
-    name: Terraform
-    needs: changes
-    if: needs.changes.outputs.terraform == 'true'
+  terraform-lint:
+    name: Terraform Lint
     runs-on: ubuntu-latest
 
     defaults:
@@ -80,9 +49,7 @@ jobs:
         run: tflint --recursive
 
   java:
-    name: Java
-    needs: changes
-    if: needs.changes.outputs.java == 'true'
+    name: Java Lint & Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -109,3 +76,34 @@ jobs:
 
       - name: Run tests
         run: ./gradlew test
+
+  terraform:
+    name: Terraform AWS Login Check
+    needs: [terraform-lint, java]
+    if: |
+      needs.terraform-lint.result == 'success' &&
+      needs.java.result == 'success'
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: terraform
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ vars.AWS_SECRET_ACCESS_KEY }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "1.9.8"
+
+      - name: Terraform init
+        run: terraform init -backend=false
+
+      - name: Terraform plan
+        run: terraform plan -input=false

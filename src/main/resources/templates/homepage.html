@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Game Hive</title>
     <link rel="stylesheet" href="/homepage.css">
+    <link rel="stylesheet" th:href="@{/navbar.css}">
 
     <meta
             name="viewport"
@@ -13,24 +14,22 @@
 
 <body>
 
-<header>
-    <a href="">
-        <span class="logo"><img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBIjgAA0GNHh_JvdefzBWpCGdzJq8Wd3bFHfd4pZc-GA&s=10" alt="GH"></span>
-        <span class="header_title">Game Hive</span>
-    </a>
+<!--<header>-->
+<!--    <a href="">-->
+<!--        <span class="logo"><img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBIjgAA0GNHh_JvdefzBWpCGdzJq8Wd3bFHfd4pZc-GA&s=10" alt="GH"></span>-->
+<!--        <span class="header_title">Game Hive</span>-->
+<!--    </a>-->
 
-    <div class="site-header-user">
-        <span th:text="${username}">Username</span>
-        <button class="">
-            <img class="user_image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlbbdPqXU3wwsJQPwkgU42saoIIg22ct8rNcFV_RU6PA&s=10" alt="Icon"></button>
-    </div>
+<!--    <div class="site-header-user">-->
+<!--        <span th:text="${username}">Username</span>-->
+<!--        <button class="">-->
+<!--            <img class="user_image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlbbdPqXU3wwsJQPwkgU42saoIIg22ct8rNcFV_RU6PA&s=10" alt="Icon"></button>-->
+<!--    </div>-->
 
-</header>
+<!--</header>-->
 
 <nav class="navbar">
-    <a href="" class="navbar-button">Home</a>
-    <a href="" class="navbar-button">Account</a>
-    <a href="" class="navbar-button">FAQs</a>
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
 
     <form th:action="@{/logout}" method="post" class="logout-form">
 
