@@ -13,7 +13,7 @@ variable "environment" {
 variable "project_name" {
   description = "Project Name"
   type        = string
-  default     = "Game Hive"
+  default     = "game-hive"
 }
 
 variable "branch_name" {
