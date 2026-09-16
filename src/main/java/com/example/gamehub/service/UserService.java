@@ -22,6 +22,8 @@ public class UserService {
             throw new IllegalArgumentException("Username cannot be shorter than 3 characters");
         } else if (newUsername.length() > 16) {
             throw new IllegalArgumentException("Username cannot be longer than 16 characters");
+        } else if (!newUsername.matches("[A-Za-z0-9_]+")) {
+            throw new IllegalArgumentException("Username can't contain special characters apart from an underscore");
         }
         User user = userRepository.findByEmail(email).orElseThrow();
         user.setUsername(newUsername);

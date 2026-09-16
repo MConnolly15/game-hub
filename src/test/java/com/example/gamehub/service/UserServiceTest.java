@@ -86,4 +86,11 @@ class UserServiceTest {
         assertThrows(IllegalArgumentException.class, () ->
                 userService.updateUsername("daphna@example.com", "daaaaaaaaaaaaaaaa"));
     }
+
+    @Test
+    void rejectsDisallowedChars() {
+        UserService userService = new UserService(userRepository);
+        assertThrows(IllegalArgumentException.class, () ->
+                userService.updateUsername("daphna@example.com", "daphna!"));
+    }
 }
