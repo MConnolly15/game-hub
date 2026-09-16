@@ -1,10 +1,13 @@
-name: Terraform
+name: Branch Database
 
 on:
   push:
-    branches-ignore: [main]
+    branches-ignore:
+      - main
+
   pull_request:
-    types: [closed]
+    types:
+      - closed
 
 permissions:
   contents: read
@@ -34,6 +37,15 @@ jobs:
         with:
           terraform_version: "1.9.8"
 
+      - name: Check Terraform backend variables
+        run: |
+          if [ -z "${{ vars.TF_STATE_BUCKET }}" ]; then
+            echo "TF_STATE_BUCKET is empty or has not been configured."
+            exit 1
+          fi
+
+          echo "Terraform state bucket is configured."
+
       - name: Terraform init
         run: |
           terraform init \
@@ -46,6 +58,7 @@ jobs:
       - name: Run Flyway migrations against the branch database
         run: |
           cd ..
+
           ./gradlew flywayMigrate \
             -Pflyway.url="jdbc:postgresql://$(terraform -chdir=terraform output -raw rds_endpoint):$(terraform -chdir=terraform output -raw rds_port)/$(terraform -chdir=terraform output -raw rds_db_name)" \
             -Pflyway.user="$(terraform -chdir=terraform output -raw rds_username)" \
@@ -74,6 +87,15 @@ jobs:
         uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: "1.9.8"
+
+      - name: Check Terraform backend variables
+        run: |
+          if [ -z "${{ vars.TF_STATE_BUCKET }}" ]; then
+            echo "TF_STATE_BUCKET is empty or has not been configured."
+            exit 1
+          fi
+
+          echo "Terraform state bucket is configured."
 
       - name: Terraform init
         run: |
