@@ -8,22 +8,22 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class ContactController {
-    private final UserRepository userRepository;
+  private final UserRepository userRepository;
 
-    public ContactController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+  public ContactController(UserRepository userRepository) {
+    this.userRepository = userRepository;
+  }
 
-    @GetMapping("/contactus")
-    public ModelAndView contactPage(Authentication authentication) {
+  @GetMapping("/contactus")
+  public ModelAndView contactPage(Authentication authentication) {
 
-        ModelAndView modelAndView = new ModelAndView("contactpage");
+    ModelAndView modelAndView = new ModelAndView("contactpage");
 
-        String email = authentication.getName();
-        userRepository
-                .findByEmail(email)
-                .ifPresent(user -> modelAndView.addObject("username", user.getUsername()));
+    String email = authentication.getName();
+    userRepository
+        .findByEmail(email)
+        .ifPresent(user -> modelAndView.addObject("username", user.getUsername()));
 
-        return modelAndView;
-    }
+    return modelAndView;
+  }
 }

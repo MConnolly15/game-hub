@@ -8,22 +8,22 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class TeamController {
-    private final UserRepository userRepository;
+  private final UserRepository userRepository;
 
-    public TeamController(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
+  public TeamController(UserRepository userRepository) {
+    this.userRepository = userRepository;
+  }
 
-    @GetMapping("/team")
-    public ModelAndView teamPage(Authentication authentication) {
+  @GetMapping("/team")
+  public ModelAndView teamPage(Authentication authentication) {
 
-        ModelAndView modelAndView = new ModelAndView("teampage");
+    ModelAndView modelAndView = new ModelAndView("teampage");
 
-        String email = authentication.getName();
-        userRepository
-                .findByEmail(email)
-                .ifPresent(user -> modelAndView.addObject("username", user.getUsername()));
+    String email = authentication.getName();
+    userRepository
+        .findByEmail(email)
+        .ifPresent(user -> modelAndView.addObject("username", user.getUsername()));
 
-        return modelAndView;
-    }
+    return modelAndView;
+  }
 }
