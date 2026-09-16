@@ -31,4 +31,27 @@ class UserServiceTest {
         //updated the username:
         assertEquals("newUsername", existingUser.getUsername());
     }
+
+    @Test
+    void successfullyUpdatesEmail() {
+        User existingUser = new User("daphna", "old@example.com", "hashedPassword");
+        when(userRepository.findByEmail("old@example.com"))
+                .thenReturn(java.util.Optional.of(existingUser));
+        UserService userService = new UserService(userRepository);
+        userService.updateEmail("old@example.com", "new@example.com");
+
+        assertEquals("new@example.com", existingUser.getEmail());
+    }
+
+    @Test
+    void successfullyUpdatesPassword() {
+        User existingUser = new User("daphna","daphna@example.com", "oldHashedPassword");
+        when(userRepository.findByEmail("daphna@example.com"))
+                .thenReturn(java.util.Optional.of(existingUser));
+        UserService userService = new UserService(userRepository);
+        //find the user by this email, then update their password to this new value
+        userService.updatePassword("daphna@example.com", "newHashedPassword");
+        assertEquals("newHashedPassword", existingUser.getPassword());
+
+    }
 }

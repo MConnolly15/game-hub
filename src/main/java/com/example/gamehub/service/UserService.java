@@ -19,5 +19,14 @@ public class UserService {
         User user = userRepository.findByEmail(email).orElseThrow();
         user.setUsername(newUsername);
     }
+    public void updateEmail(String currentEmail, String newEmail){
+        User user = userRepository.findByEmail(currentEmail).orElseThrow();
+        user.setEmail(newEmail);
+    }
+
+    public void updatePassword(String email, String newPassword){
+        User user = userRepository.findByEmail(email).orElseThrow();
+        user.setPassword(newPassword);
+    }
 }
 
