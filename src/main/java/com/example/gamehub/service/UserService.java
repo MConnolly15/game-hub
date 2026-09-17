@@ -40,6 +40,15 @@ public class UserService {
     }
 
     public void updatePassword(String email, String newPassword){
+        if(newPassword.isBlank()){
+            throw new IllegalArgumentException("Password cannot be blank!");
+        } else if(newPassword.length() < 8) {
+            throw new IllegalArgumentException("Password cannot be shorter than 8 characters");
+        }else if(newPassword.length() > 16) {
+            throw new IllegalArgumentException("Password cannot be longer than 16 characters");
+        } else if(!newPassword.matches("(?=.*[A-Za-z])(?=.*\\d).+")) {
+            throw new IllegalArgumentException("Password must contain at least one letter and one number");
+        }
         User user = userRepository.findByEmail(email).orElseThrow();
         user.setPassword(newPassword);
     }

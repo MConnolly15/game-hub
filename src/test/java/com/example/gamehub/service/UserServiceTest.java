@@ -4,6 +4,8 @@ import com.example.gamehub.model.User;
 import com.example.gamehub.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -113,4 +115,37 @@ class UserServiceTest {
         assertThrows(IllegalArgumentException.class, () ->
                 userService.updateEmail("daphna@example.com", "@daphnaexample"));
     }
+
+    @Test
+    void rejectsPasswordUnder8Chars() {
+        UserService userService = new UserService(userRepository);
+        assertThrows(IllegalArgumentException.class, () ->
+                userService.updatePassword("daphna@example.com", "hello12"));
+    }
+
+    @Test
+    void rejectsEmptyPassword() {
+        UserService userService = new UserService(userRepository);
+        assertThrows(IllegalArgumentException.class, () ->
+                userService.updatePassword("daphna@example.com", ""));
+    }
+
+    @Test
+    void rejectsPasswordOver16Chars() {
+        UserService userService = new UserService(userRepository);
+        assertThrows(IllegalArgumentException.class, () ->
+                userService.updatePassword("daphna@example.com", "hellohellohello12"));
+    }
+    //to test multiple parameters:
+    @ParameterizedTest
+    //ran once for letters, once for nums
+    @ValueSource(strings = {"hellohellohello", "12345678"})
+    //method takes invalid password as a paremetr JUnit fills this in with the next value from the list above
+    void rejectsPasswordMissingLetterOrDigit(String invalidPassword) {
+        UserService userService = new UserService(userRepository);
+        assertThrows(IllegalArgumentException.class, () ->
+                userService.updatePassword("daphna@example.com", invalidPassword));
+    }
+
+
 }
