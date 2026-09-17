@@ -1,10 +1,6 @@
 resource "aws_db_subnet_group" "default" {
-  name       = "${local.resource_prefix}-db"
+  name       = "${var.project_name}-${var.environment}-db"
   subnet_ids = data.aws_subnets.default.ids
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "random_password" "branch_db" {
