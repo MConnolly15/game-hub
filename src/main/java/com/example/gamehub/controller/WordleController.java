@@ -131,7 +131,9 @@ public class WordleController {
     }
 
     for (int i = 0; i < len; i++) {
-      if (statuses[i] != null) {continue;}
+      if (statuses[i] != null) {
+        continue;
+      }
 
       char c = guess.charAt(i);
       boolean found = false;
@@ -150,7 +152,9 @@ public class WordleController {
 
   private void addAllGuessesToGrid(ModelAndView mv, HttpSession session) {
     List<String> guesses = (List<String>) session.getAttribute("guesses");
-    if (guesses == null) {return;}
+    if (guesses == null) {
+      return;
+    }
 
     String wordTarget = getOrCreateTarget(session); // safe even if called standalone
 
