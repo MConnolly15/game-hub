@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Wordle - Game Hive</title>
+  <link rel="stylesheet" href="/gamepage.css">
+  <link rel="stylesheet" th:href="@{/navbar.css}">
+
+  <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+</head>
+
+<body>
+<nav class="navbar">
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
+
+  <form th:action="@{/logout}" method="post" class="logout-form">
+
+    <input
+            type="hidden"
+            th:name="${_csrf.parameterName}"
+            th:value="${_csrf.token}">
+
+    <button type="submit" class="navbar-button">
+      Logout
+    </button>
+
+  </form>
+
+</nav>
+
+
+<main>
+  <div class="wordle_game_page_wrapper">
+    <a href="/" class="back-link">&larr; Back to all games</a>
+
+    <h1>Wordle</h1>
+
+    <form th:if="${won != true and lost != true}" th:action="@{/game/wordle/submit-guess}" method="post">
+      <label for="userGuess">Your guess: </label>
+      <input type="text" id="userGuess" name="userGuess" th:value="${userGuess}">
+      <input type="submit" value="Submit"> <br><br>
+    </form>
+
+    <!--    Display text when guess made-->
+    <div th:if="${userGuess}">
+      <p>Your guess: <span th:text="${userGuess}"></span></p>
+      <p>Guesses: <span th:text="${UserAttempts}"></span> / 6</p>
+    </div>
+
+    <div th:if="${won}">
+      <p style="color: green; font-weight: bold;" th:text="${message}"></p>
+    </div>
+
+    <div th:if="${lost}">
+      <p style="color: red; font-weight: bold;" th:text="${message}"></p>
+    </div>
+
+    <div th:if="${error}">
+      <p th:text="${error}"></p>
+    </div>
+
+
+    <div class="wordle-grid">
+      <div class="wordle-letter" th:classappend="${row1_letter1_status}" th:text="${row1_letter1}"></div>
+      <div class="wordle-letter" th:classappend="${row1_letter2_status}" th:text="${row1_letter2}"></div>
+      <div class="wordle-letter" th:classappend="${row1_letter3_status}" th:text="${row1_letter3}"></div>
+      <div class="wordle-letter" th:classappend="${row1_letter4_status}" th:text="${row1_letter4}"></div>
+      <div class="wordle-letter" th:classappend="${row1_letter5_status}" th:text="${row1_letter5}"></div>
+
+      <div class="wordle-letter" th:classappend="${row2_letter1_status}" th:text="${row2_letter1}"></div>
+      <div class="wordle-letter" th:classappend="${row2_letter2_status}" th:text="${row2_letter2}"></div>
+      <div class="wordle-letter" th:classappend="${row2_letter3_status}" th:text="${row2_letter3}"></div>
+      <div class="wordle-letter" th:classappend="${row2_letter4_status}" th:text="${row2_letter4}"></div>
+      <div class="wordle-letter" th:classappend="${row2_letter5_status}" th:text="${row2_letter5}"></div>
+
+      <div class="wordle-letter" th:classappend="${row3_letter1_status}" th:text="${row3_letter1}"></div>
+      <div class="wordle-letter" th:classappend="${row3_letter2_status}" th:text="${row3_letter2}"></div>
+      <div class="wordle-letter" th:classappend="${row3_letter3_status}" th:text="${row3_letter3}"></div>
+      <div class="wordle-letter" th:classappend="${row3_letter4_status}" th:text="${row3_letter4}"></div>
+      <div class="wordle-letter" th:classappend="${row3_letter5_status}" th:text="${row3_letter5}"></div>
+
+      <div class="wordle-letter" th:classappend="${row4_letter1_status}" th:text="${row4_letter1}"></div>
+      <div class="wordle-letter" th:classappend="${row4_letter2_status}" th:text="${row4_letter2}"></div>
+      <div class="wordle-letter" th:classappend="${row4_letter3_status}" th:text="${row4_letter3}"></div>
+      <div class="wordle-letter" th:classappend="${row4_letter4_status}" th:text="${row4_letter4}"></div>
+      <div class="wordle-letter" th:classappend="${row4_letter5_status}" th:text="${row4_letter5}"></div>
+
+      <div class="wordle-letter" th:classappend="${row5_letter1_status}" th:text="${row5_letter1}"></div>
+      <div class="wordle-letter" th:classappend="${row5_letter2_status}" th:text="${row5_letter2}"></div>
+      <div class="wordle-letter" th:classappend="${row5_letter3_status}" th:text="${row5_letter3}"></div>
+      <div class="wordle-letter" th:classappend="${row5_letter4_status}" th:text="${row5_letter4}"></div>
+      <div class="wordle-letter" th:classappend="${row5_letter5_status}" th:text="${row5_letter5}"></div>
+
+      <div class="wordle-letter" th:classappend="${row6_letter1_status}" th:text="${row6_letter1}"></div>
+      <div class="wordle-letter" th:classappend="${row6_letter2_status}" th:text="${row6_letter2}"></div>
+      <div class="wordle-letter" th:classappend="${row6_letter3_status}" th:text="${row6_letter3}"></div>
+      <div class="wordle-letter" th:classappend="${row6_letter4_status}" th:text="${row6_letter4}"></div>
+      <div class="wordle-letter" th:classappend="${row6_letter5_status}" th:text="${row6_letter5}"></div>
+    </div>
+
+
+
+
+
+
+    <!-- Reset button -->
+    <br><br>
+    <form th:action="@{/game/wordle/reset}" method="post">
+      <button type="submit" class="reset-button">New Game</button>
+    </form>
+
+  </div>
+</main>
+
+<footer>
+  <div class="site-footer__column">
+    <a href="/" class="site-footer__logo">Game Hive</a>
+
+    <nav class="site-footer__links">
+      <h3>Helpful Links</h3>
+      <ul>
+        <li><a href="/team">Meet the Team</a></li>
+        <li><a href="/faq">FAQs</a></li>
+        <li><a href="/contactus">Contact Us</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
