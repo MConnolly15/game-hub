@@ -14,14 +14,14 @@ data "aws_ami" "al2023" {
 }
 
 resource "aws_key_pair" "app" {
-  count = local.is_main ? 1 : 0
+  count = 1
 
-  key_name   = "${var.project_name}-${var.environment}"
+  key_name   = local.resource_prefix
   public_key = var.ec2_ssh_public_key
 }
 
 resource "aws_instance" "app" {
-  count = local.is_main ? 1 : 0
+  count = 1
 
   ami                         = data.aws_ami.al2023.id
   instance_type               = "t3.micro"
@@ -69,6 +69,7 @@ resource "aws_instance" "app" {
   EOF
 
   tags = {
-    Name = "${var.project_name}-${var.environment}-app"
+    Name   = "${local.resource_prefix}-app"
+    Branch = var.branch_name
   }
 }

@@ -1,5 +1,5 @@
 resource "aws_db_subnet_group" "default" {
-  name       = "${var.project_name}-${var.environment}-db"
+  name       = "${local.resource_prefix}-db"
   subnet_ids = data.aws_subnets.default.ids
 }
 
@@ -24,11 +24,16 @@ resource "aws_db_instance" "postgres" {
   publicly_accessible = local.is_main ? var.db_main_publicly_accessible : true
   multi_az            = local.is_main ? var.db_main_multi_az : false
 
-  db_subnet_group_name   = aws_db_subnet_group.default.name
-  vpc_security_group_ids = local.is_main ? [aws_security_group.rds_main.id] : [aws_security_group.rds_branch.id]
+  db_subnet_group_name = aws_db_subnet_group.default.name
 
-  deletion_protection = local.is_main ? true : false
-  skip_final_snapshot = local.is_main ? false : true
+  vpc_security_group_ids = local.is_main ? [
+    aws_security_group.rds_main[0].id
+    ] : [
+    aws_security_group.rds_branch[0].id
+  ]
+
+  deletion_protection = local.is_main
+  skip_final_snapshot = !local.is_main
 
   password = local.is_main ? "unmanaged-set-manually-in-aws" : random_password.branch_db[0].result
 
@@ -38,5 +43,9 @@ resource "aws_db_instance" "postgres" {
       engine_version,
       backup_retention_period,
     ]
+  }
+
+  tags = {
+    Branch = var.branch_name
   }
 }

@@ -15,4 +15,10 @@ data "aws_subnets" "default" {
 locals {
   is_main     = var.branch_name == "main"
   branch_slug = lower(replace(var.branch_name, "/[^a-zA-Z0-9]+/", "-"))
+
+  resource_prefix = local.is_main ? (
+    "${var.project_name}-${var.environment}"
+    ) : (
+    "${var.project_name}-${var.environment}-${local.branch_slug}"
+  )
 }

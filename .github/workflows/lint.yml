@@ -133,11 +133,17 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ vars.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: eu-west-2
       TF_VAR_branch_name: ${{ github.ref_name }}
-      TF_VAR_ec2_ssh_public_key: "unused-branch-db-only"
+      TF_VAR_ec2_ssh_public_key: ${{ vars.EC2_SSH_PUBLIC_KEY }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
@@ -162,15 +168,132 @@ jobs:
       - name: Terraform apply
         run: terraform apply -auto-approve -input=false
 
-      - name: Run Flyway migrations against the branch database
+      - name: Run Flyway migrations
         run: |
           cd ..
+
+          DB_PASSWORD="$(terraform -chdir=terraform output -raw branch_db_password)"
+
+          echo "::add-mask::$DB_PASSWORD"
 
           ./gradlew flywayMigrate \
             -Pflyway.url="jdbc:postgresql://$(terraform -chdir=terraform output -raw rds_endpoint):$(terraform -chdir=terraform output -raw rds_port)/$(terraform -chdir=terraform output -raw rds_db_name)" \
             -Pflyway.user="$(terraform -chdir=terraform output -raw rds_username)" \
-            -Pflyway.password="$(terraform -chdir=terraform output -raw branch_db_password)"
+            -Pflyway.password="$DB_PASSWORD"
 
+      - name: Build application
+        run: |
+          cd ..
+          ./gradlew bootJar
+
+      - name: Get EC2 information
+        run: |
+          EC2_HOST="$(terraform output -raw ec2_public_ip)"
+          WEBSITE_URL="$(terraform output -raw website_url)"
+
+          echo "EC2_HOST=$EC2_HOST" >> "$GITHUB_ENV"
+          echo "WEBSITE_URL=$WEBSITE_URL" >> "$GITHUB_ENV"
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+
+          printf '%s\n' "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/game-hive
+
+          chmod 600 ~/.ssh/game-hive
+
+          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
+
+      - name: Wait for EC2 setup
+        run: |
+          ssh \
+            -i ~/.ssh/game-hive \
+            -o ConnectTimeout=10 \
+            ec2-user@"$EC2_HOST" \
+            "sudo cloud-init status --wait"
+
+      - name: Prepare application environment
+        run: |
+          DB_HOST="$(terraform output -raw rds_endpoint)"
+          DB_PORT="$(terraform output -raw rds_port)"
+          DB_NAME="$(terraform output -raw rds_db_name)"
+          DB_USERNAME="$(terraform output -raw rds_username)"
+          DB_PASSWORD="$(terraform output -raw branch_db_password)"
+
+          echo "::add-mask::$DB_PASSWORD"
+
+          cat > /tmp/app.env <<EOF
+          DB_HOST=$DB_HOST
+          DB_PORT=$DB_PORT
+          DB_NAME=$DB_NAME
+          DB_USERNAME=$DB_USERNAME
+          DB_PASSWORD=$DB_PASSWORD
+          SERVER_PORT=8080
+          EOF
+
+      - name: Find application jar
+        run: |
+          cd ..
+
+          APP_JAR="$(find build/libs -maxdepth 1 -name '*.jar' ! -name '*-plain.jar' | head -1)"
+
+          if [ -z "$APP_JAR" ]; then
+            echo "No application JAR found."
+            exit 1
+          fi
+
+          echo "APP_JAR=$APP_JAR" >> "$GITHUB_ENV"
+
+      - name: Upload application
+        working-directory: .
+        run: |
+          scp \
+            -i ~/.ssh/game-hive \
+            "$APP_JAR" \
+            ec2-user@"$EC2_HOST":/tmp/app.jar
+
+          scp \
+            -i ~/.ssh/game-hive \
+            /tmp/app.env \
+            ec2-user@"$EC2_HOST":/tmp/app.env
+
+      - name: Start application
+        run: |
+          ssh \
+            -i ~/.ssh/game-hive \
+            ec2-user@"$EC2_HOST" \
+            "
+              sudo mv /tmp/app.jar /opt/gamehub/app.jar &&
+              sudo mv /tmp/app.env /opt/gamehub/app.env &&
+              sudo chown gamehub:gamehub /opt/gamehub/app.jar &&
+              sudo chown gamehub:gamehub /opt/gamehub/app.env &&
+              sudo chmod 600 /opt/gamehub/app.env &&
+              sudo systemctl daemon-reload &&
+              sudo systemctl restart gamehub
+            "
+
+      - name: Check application
+        run: |
+          for i in {1..30}; do
+            if curl --fail --silent "$WEBSITE_URL" > /dev/null; then
+              echo "Game Hub is running."
+              exit 0
+            fi
+
+            echo "Waiting for Game Hub..."
+            sleep 5
+          done
+
+          echo "Game Hub did not respond."
+          exit 1
+
+      - name: Publish branch URL
+        run: |
+          echo "## Game Hub Branch Environment" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Branch:** \`${{ github.ref_name }}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "**URL:** $WEBSITE_URL" >> "$GITHUB_STEP_SUMMARY"
 
   destroy-branch-database:
     name: Destroy Branch Database

@@ -29,17 +29,17 @@ output "rds_username" {
 }
 
 output "branch_db_password" {
-  description = "Generated password for a branch database (null for main, which is unmanaged)"
+  description = "Generated password for branch database"
   value       = local.is_main ? null : random_password.branch_db[0].result
   sensitive   = true
 }
 
 output "ec2_public_ip" {
-  description = "Public IP of the Game Hub app instance (main branch only)"
-  value       = local.is_main ? aws_instance.app[0].public_ip : null
+  description = "Public IP of the Game Hub app instance"
+  value       = aws_instance.app[0].public_ip
 }
 
 output "website_url" {
-  description = "Click this to open the running app in a browser (main branch only)"
-  value       = local.is_main ? "http://${aws_instance.app[0].public_ip}:${var.app_port}" : null
+  description = "URL for the deployed Game Hub application"
+  value       = "http://${aws_instance.app[0].public_ip}:${var.app_port}"
 }
