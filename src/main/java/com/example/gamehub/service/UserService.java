@@ -29,6 +29,12 @@ public class UserService {
         user.setUsername(newUsername);
     }
     public void updateEmail(String currentEmail, String newEmail){
+        if(newEmail.isBlank()){
+            throw new IllegalArgumentException("Email cannot be blank!");
+            //regex to cover all email requirements (text before ,@, e.g. ".com)
+        } else if (!newEmail.matches("^[^@]+@[^@]+\\.[^@]+$")) {
+            throw new IllegalArgumentException("Email must be a valid email address!");
+        }
         User user = userRepository.findByEmail(currentEmail).orElseThrow();
         user.setEmail(newEmail);
     }

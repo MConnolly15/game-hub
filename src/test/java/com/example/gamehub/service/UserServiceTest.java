@@ -93,4 +93,24 @@ class UserServiceTest {
         assertThrows(IllegalArgumentException.class, () ->
                 userService.updateUsername("daphna@example.com", "daphna!"));
     }
+
+    @Test
+    void rejectsBlankEmail() {
+        UserService userService = new UserService(userRepository);
+        assertThrows(IllegalArgumentException.class, () ->
+                userService.updateEmail("daphna@example.com", ""));
+    }
+
+    @Test
+    void rejectsEmailMissingAtSign() {
+        UserService userService = new UserService(userRepository);
+        assertThrows(IllegalArgumentException.class, () ->
+                userService.updateEmail("daphna@example.com", "daphnaexample.com"));
+    }
+    @Test
+    void rejectsEmailWithAtSignButNoEndOfEmail() {
+        UserService userService = new UserService(userRepository);
+        assertThrows(IllegalArgumentException.class, () ->
+                userService.updateEmail("daphna@example.com", "@daphnaexample"));
+    }
 }
