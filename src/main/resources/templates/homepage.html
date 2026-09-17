@@ -14,20 +14,6 @@
 
 <body>
 
-<!--<header>-->
-<!--    <a href="">-->
-<!--        <span class="logo"><img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBIjgAA0GNHh_JvdefzBWpCGdzJq8Wd3bFHfd4pZc-GA&s=10" alt="GH"></span>-->
-<!--        <span class="header_title">Game Hive</span>-->
-<!--    </a>-->
-
-<!--    <div class="site-header-user">-->
-<!--        <span th:text="${username}">Username</span>-->
-<!--        <button class="">-->
-<!--            <img class="user_image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlbbdPqXU3wwsJQPwkgU42saoIIg22ct8rNcFV_RU6PA&s=10" alt="Icon"></button>-->
-<!--    </div>-->
-
-<!--</header>-->
-
 <nav class="navbar">
     <div th:replace="~{fragments/navbar :: navbar}"></div>
 
@@ -46,14 +32,15 @@
 
 </nav>
 
-<!--Main Body-->
 <main>
 <div class="game_wrapper">
 <div class="game_section">
         <div class="game_hexagon"> <a href="/game/wordle">Wordle</a>
             <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/Wordle_196_example.svg/960px-Wordle_196_example.svg.png?utm_source=en.wikipedia.org&utm_campaign=index&utm_content=thumbnail" alt="Wordle">
         </div>
-        <div class="game_hexagon"><a href="/game/tictactoe">Tic Tac Toe</a></div>
+        <div class="game_hexagon"><a href="/game/tictactoe">Tic Tac Toe</a>
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4xQ2HHVWSQ2HVDorKhOzmzJaODndBI0ERiDz6gdK9gg&s=10" alt="">
+        </div>
         <div class="game_hexagon">Hexagon</div>
         <div class="game_hexagon">Hexagon</div>
         <div class="game_hexagon">Hexagon</div>
@@ -72,11 +59,8 @@
 
     </div>
 </div>
-
 <br><br>
 </main>
-<!--footer-->
-
 
 <footer>
 
