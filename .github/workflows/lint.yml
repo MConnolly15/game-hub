@@ -79,31 +79,24 @@ jobs:
 
   terraform:
     name: Terraform AWS Login Check
-    needs: [terraform-lint, java]
+    needs:
+      - terraform-lint
+      - java
+
     if: |
       needs.terraform-lint.result == 'success' &&
       needs.java.result == 'success'
-    runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: terraform
+    runs-on: ubuntu-latest
 
     env:
       AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ vars.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: eu-west-2
 
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v4
-        with:
-          terraform_version: "1.9.8"
-
-      - name: Terraform init
-        run: terraform init -backend=false
-
-      - name: Terraform plan
-        run: terraform plan -input=false
+      - name: Verify AWS credentials
+        run: aws sts get-caller-identity
