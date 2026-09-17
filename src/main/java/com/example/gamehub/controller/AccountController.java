@@ -17,7 +17,7 @@ public class AccountController {
   private final PasswordEncoder passwordEncoder;
   private final UserService userService;
 
-  public AccountController(UserRepository userRepository, PasswordEncoder passwordEncoder, UserService userService) {
+  public AccountController(UserRepository userRepository, PasswordEncoder passwordEncoder, UserService userService  ) {
     this.userRepository = userRepository;
     this.passwordEncoder = passwordEncoder;
     this.userService = userService;
@@ -62,6 +62,8 @@ public class AccountController {
 
     String loggedInUserEmail = authentication.getName();
     userService.updateUsername(loggedInUserEmail, username);
+    userService.updateEmail(loggedInUserEmail, email);
+    userService.updatePassword(loggedInUserEmail, password);
 
     return "redirect:/profile";
   }

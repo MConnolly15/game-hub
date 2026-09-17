@@ -76,5 +76,7 @@ class AccountControllerTest {
         //this checks that the method was actually called, controller only return values like "redirect:.."
         // and by doing the below I can see that the controller correctly delegated to the service.
         verify(userService).updateUsername("daphna@example.com", "newUsername");
+        verify(userService).updateEmail("daphna@example.com", "daphna@example.com");
+        verify(userService).updatePassword("daphna@example.com", "newPass1");
     }
 }
