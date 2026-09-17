@@ -4,15 +4,18 @@ import com.example.gamehub.model.User;
 import com.example.gamehub.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class UserService {
 
     private UserRepository userRepository;
+    private PasswordEncoder passwordEncoder;
 
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public void updateUsername(String email, String newUsername){
@@ -50,7 +53,8 @@ public class UserService {
             throw new IllegalArgumentException("Password must contain at least one letter and one number");
         }
         User user = userRepository.findByEmail(email).orElseThrow();
-        user.setPassword(newPassword);
+        String hashedPassword = passwordEncoder.encode(newPassword);
+        user.setPassword(hashedPassword);
     }
 
 }
