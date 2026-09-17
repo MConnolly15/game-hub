@@ -324,14 +324,24 @@ jobs:
         with:
           terraform_version: "1.9.8"
 
-      - name: Check Terraform backend variables
+      - name: Check deployment variables
         run: |
           if [ -z "${{ vars.TF_STATE_BUCKET }}" ]; then
             echo "TF_STATE_BUCKET is empty or has not been configured."
             exit 1
           fi
 
-          echo "Terraform state bucket is configured."
+          if [ -z "${{ vars.EC2_SSH_PUBLIC_KEY }}" ]; then
+            echo "EC2_SSH_PUBLIC_KEY is empty or has not been configured."
+            exit 1
+          fi
+
+          if [ -z "${{ secrets.EC2_SSH_PRIVATE_KEY }}" ]; then
+            echo "EC2_SSH_PRIVATE_KEY is empty or has not been configured."
+            exit 1
+          fi
+
+          echo "Deployment variables are configured."
 
       - name: Terraform init
         run: |

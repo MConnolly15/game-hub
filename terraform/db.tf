@@ -1,6 +1,10 @@
 resource "aws_db_subnet_group" "default" {
   name       = "${local.resource_prefix}-db"
   subnet_ids = data.aws_subnets.default.ids
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "random_password" "branch_db" {
@@ -34,6 +38,8 @@ resource "aws_db_instance" "postgres" {
 
   deletion_protection = local.is_main
   skip_final_snapshot = !local.is_main
+
+  apply_immediately = !local.is_main
 
   password = local.is_main ? "unmanaged-set-manually-in-aws" : random_password.branch_db[0].result
 

@@ -46,6 +46,10 @@ resource "aws_security_group" "rds_main" {
     protocol        = "tcp"
     security_groups = [aws_security_group.ec2.id]
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_security_group" "rds_branch" {
@@ -61,6 +65,10 @@ resource "aws_security_group" "rds_branch" {
     to_port     = 5432
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
