@@ -23,13 +23,13 @@ resource "random_password" "branch_db" {
 resource "aws_db_instance" "postgres" {
   identifier = local.is_main ? "game-hive-db" : "game-hive-db-${local.branch_slug}"
 
-  engine              = "postgres"
-  engine_version      = var.db_engine_version
-  instance_class      = var.db_instance_class
-  allocated_storage   = var.db_allocated_storage
-  storage_type        = var.db_storage_type
-  username            = var.db_master_username
-  db_name             = var.db_name
+  engine            = "postgres"
+  engine_version    = var.db_engine_version
+  instance_class    = var.db_instance_class
+  allocated_storage = var.db_allocated_storage
+  storage_type      = var.db_storage_type
+  username          = var.db_master_username
+  db_name           = var.db_name
 
   publicly_accessible = true
   multi_az            = local.is_main ? var.db_main_multi_az : false
@@ -44,7 +44,7 @@ resource "aws_db_instance" "postgres" {
 
   deletion_protection = local.is_main
   skip_final_snapshot = !local.is_main
-  apply_immediately    = !local.is_main
+  apply_immediately   = !local.is_main
 
   password = local.is_main ? "unmanaged-set-manually-in-aws" : random_password.branch_db[0].result
 
