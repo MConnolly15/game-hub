@@ -195,12 +195,6 @@ jobs:
 
             if [ "$CURRENT_SUBNET" = "$LEGACY_SUBNET" ]; then
               echo "Legacy branch database detected."
-
-              if ! terraform state show aws_db_subnet_group.default > /dev/null 2>&1; then
-                echo "Importing legacy subnet group..."
-                terraform import aws_db_subnet_group.default "$LEGACY_SUBNET"
-              fi
-
               echo "Recreating disposable branch database with branch-specific networking..."
 
               terraform apply \
@@ -217,7 +211,6 @@ jobs:
           terraform apply \
             -auto-approve \
             -input=false
-
       - name: Run Flyway migrations
         run: |
           cd ..
