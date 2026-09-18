@@ -264,15 +264,7 @@ jobs:
 
       - name: Get database password
         run: |
-          if [ "${{ github.ref_name }}" = "main" ]; then
-            DB_PASSWORD="$(aws ssm get-parameter \
-              --name "/game-hive/dev/db/password" \
-              --with-decryption \
-              --query "Parameter.Value" \
-              --output text)"
-          else
-            DB_PASSWORD="$(terraform -chdir=terraform output -raw branch_db_password)"
-          fi
+          DB_PASSWORD="$(terraform -chdir=terraform output -raw db_password)"
 
           echo "::add-mask::$DB_PASSWORD"
           echo "DB_PASSWORD=$DB_PASSWORD" >> "$GITHUB_ENV"
@@ -413,15 +405,7 @@ jobs:
 
       - name: Get database password
         run: |
-          if [ "${{ github.ref_name }}" = "main" ]; then
-            DB_PASSWORD="$(aws ssm get-parameter \
-              --name "/game-hive/dev/db/password" \
-              --with-decryption \
-              --query "Parameter.Value" \
-              --output text)"
-          else
-            DB_PASSWORD="$(terraform -chdir=terraform output -raw branch_db_password)"
-          fi
+          DB_PASSWORD="$(terraform -chdir=terraform output -raw db_password)"
 
           echo "::add-mask::$DB_PASSWORD"
           echo "DB_PASSWORD=$DB_PASSWORD" >> "$GITHUB_ENV"
