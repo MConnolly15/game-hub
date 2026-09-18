@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import static org.mockito.Mockito.verify;
 
 //Turns on Mockito's machinery for this test class and without it,
 // @Mock wouldn't actually create anything
@@ -36,6 +37,8 @@ class UserServiceTest {
         userService.updateUsername("daphna@example.com", "newUsername");
         //updated the username:
         assertEquals("newUsername", existingUser.getUsername());
+        verify(userRepository).save(existingUser);
+
     }
 
     @Test
@@ -47,6 +50,8 @@ class UserServiceTest {
         userService.updateEmail("old@example.com", "new@example.com");
 
         assertEquals("new@example.com", existingUser.getEmail());
+        verify(userRepository).save(existingUser);
+
     }
 
     @Test
@@ -60,6 +65,8 @@ class UserServiceTest {
         //find the user by this email, then update their password to this new value
         userService.updatePassword("daphna@example.com", "newPass1");
         assertEquals("encodedNewPass1", existingUser.getPassword());
+        verify(userRepository).save(existingUser);
+
 
     }
 
