@@ -71,10 +71,23 @@ input:focus {
     border-color: #faa303;
 }
 
-button[type="submit"] {
+/*button[type="submit"] {*/
+/*    width: 100%;*/
+/*    padding: 12px;*/
+/*    background-color: #faa303;*/
+/*    color: #252523;*/
+/*    border: none;*/
+/*    border-radius: 8px;*/
+/*    font-size: 16px;*/
+/*    font-weight: bold;*/
+/*    cursor: pointer;*/
+/*    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);*/
+/*    transition: background-color 0.15s ease;*/
+/*}*/
+button {
     width: 100%;
     padding: 12px;
-    background: #faa303;
+    background-color: #faa303;
     color: #252523;
     border: none;
     border-radius: 8px;
@@ -85,9 +98,30 @@ button[type="submit"] {
     transition: background-color 0.15s ease;
 }
 
-button[type="submit"]:hover {
+.navbar-button{
+    display: inline-block;
+    color: #252523;
+    font: inherit;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 5px 20px;
+    background-color: #faa303;
+
+    cursor: pointer;
+
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+/*button[type="submit"]:hover {*/
+/*    background: #fcba06;*/
+/*}*/
+
+button:hover {
     background: #fcba06;
 }
+
+
 
 .error-message {
     color: #dc2626;

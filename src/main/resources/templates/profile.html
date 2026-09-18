@@ -20,63 +20,96 @@
             <h1>Game<span>Hive</span></h1>
         </div>
 
-        <h2><span th:text="${username}">Username</span>'s Profile</h2>
+        <div id="viewMode">
+            <h2><span th:text="${username}">Username</span>'s Profile</h2>
 
-        <p class="subtitle">
-            Update your account details:
-        </p>
+            <table style="width: 100%; margin-bottom: 20px;">
+                <tr>
+                    <td style="font-weight: bold; padding: 6px 0;">Username</td>
+                    <td style="text-align: right;" th:text="${username}">Username</td>
+                </tr>
+                <tr>
+                    <td style="font-weight: bold; padding: 6px 0;">Email</td>
+                    <td style="text-align: right;" th:text="${email}">Email</td>
+                </tr>
+            </table>
 
-        <form method="post" th:action="@{/profile}">
+            <button type="button" id="editButton">Edit profile</button>
+        </div>
 
-            <input
-                    type="hidden"
-                    th:name="${_csrf.parameterName}"
-                    th:value="${_csrf.token}">
+        <div id="editMode" style="display: none">
+            <h2>Edit your profile</h2>
 
-            <label for="username">Username</label>
-            <input
-                    id="username"
-                    name="username"
-                    type="text"
-                    minlength="3"
-                    maxlength="16"
-                    pattern="[A-Za-z0-9_]+"
-                    th:value="${username}"
-                    required>
+            <form method="post" th:action="@{/profile}">
 
-            <p
-                    class="error-message"
-                    th:if="${usernameError}"
-                    th:text="${usernameError}">
-            </p>
+                <input
+                        type="hidden"
+                        th:name="${_csrf.parameterName}"
+                        th:value="${_csrf.token}">
 
-            <label for="email">Email</label>
-            <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    th:value="${email}"
-                    required>
+                <label for="username">Username</label>
+                <input
+                        id="username"
+                        name="username"
+                        type="text"
+                        minlength="3"
+                        maxlength="16"
+                        pattern="[A-Za-z0-9_]+"
+                        th:value="${username}"
+                        required>
 
-            <label for="password">New password</label>
-            <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    minlength="8"
-                    maxlength="16"
-                    pattern="(?=.*[A-Za-z])(?=.*\d).{8,16}"
-                    placeholder="Leave as-is or choose a new password"
-                    required>
+                <p
+                        class="error-message"
+                        th:if="${usernameError}"
+                        th:text="${usernameError}">
+                </p>
 
-            <button type="submit">
-                Save changes
-            </button>
+                <label for="email">Email</label>
+                <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        th:value="${email}"
+                        required>
 
-        </form>
+                <label for="password">New password</label>
+                <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        minlength="8"
+                        maxlength="16"
+                        pattern="(?=.*[A-Za-z])(?=.*\d).{8,16}"
+                        placeholder="Leave as-is or choose a new password"
+                        required>
 
+                <div style="display: flex; gap: 12px;">
+                    <button type="submit">
+                        Save
+                    </button>
+                    <button type="button" id="cancelButton">
+                        Cancel
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
     </div>
 </main>
+
+<script>
+    document.getElementById('editButton').addEventListener('click', function () {
+        document.getElementById('viewMode').style.display = 'none';
+        document.getElementById('editMode').style.display = 'block';
+    });
+
+    document.getElementById('cancelButton').addEventListener('click', function () {
+        document.getElementById('editMode').style.display = 'none';
+        document.getElementById('viewMode').style.display = 'block';
+    });
+</script>
+
 <footer>
 
     <div class="site-footer__column">
