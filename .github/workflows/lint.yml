@@ -165,6 +165,16 @@ jobs:
             -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
             -backend-config="key=game-hub/${{ github.ref_name }}/terraform.tfstate"
 
+      - name: Import existing DB subnet group
+        if: github.ref_name == 'terraform-aws-scaffold'
+        run: |
+          if ! terraform state show aws_db_subnet_group.default > /dev/null 2>&1; then
+            echo "Importing existing DB subnet group..."
+            terraform import aws_db_subnet_group.default game-hive-dev-db
+          else
+            echo "DB subnet group is already in Terraform state."
+          fi
+          
       - name: Terraform apply
         run: terraform apply -auto-approve -input=false
 
