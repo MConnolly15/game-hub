@@ -12,9 +12,12 @@ resource "aws_db_subnet_group" "default" {
   }
 }
 
-resource "random_password" "branch_db" {
-  count = local.is_main ? 0 : 1
+moved {
+  from = random_password.branch_db[0]
+  to   = random_password.db
+}
 
+resource "random_password" "db" {
   length           = 24
   special          = true
   override_special = "-_"
@@ -28,8 +31,10 @@ resource "aws_db_instance" "postgres" {
   instance_class    = var.db_instance_class
   allocated_storage = var.db_allocated_storage
   storage_type      = var.db_storage_type
-  username          = var.db_master_username
-  db_name           = var.db_name
+
+  username = var.db_master_username
+  password = random_password.db.result
+  db_name  = var.db_name
 
   publicly_accessible = true
   multi_az            = local.is_main ? var.db_main_multi_az : false
@@ -44,13 +49,11 @@ resource "aws_db_instance" "postgres" {
 
   deletion_protection = local.is_main
   skip_final_snapshot = !local.is_main
-  apply_immediately   = !local.is_main
 
-  password = local.is_main ? "unmanaged-set-manually-in-aws" : random_password.branch_db[0].result
+  apply_immediately = true
 
   lifecycle {
     ignore_changes = [
-      password,
       engine_version,
       backup_retention_period,
     ]

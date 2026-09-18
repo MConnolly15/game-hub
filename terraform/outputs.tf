@@ -28,9 +28,9 @@ output "rds_username" {
   value       = aws_db_instance.postgres.username
 }
 
-output "branch_db_password" {
-  description = "Generated password for branch database"
-  value       = local.is_main ? null : random_password.branch_db[0].result
+output "db_password" {
+  description = "Generated database password"
+  value       = random_password.db.result
   sensitive   = true
 }
 
