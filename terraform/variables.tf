@@ -25,6 +25,7 @@ variable "branch_name" {
 variable "ec2_ssh_public_key" {
   description = "public ssh key"
   type        = string
+  default     = ""
 }
 
 variable "app_port" {
@@ -67,12 +68,6 @@ variable "db_name" {
   description = "Database Name"
   type        = string
   default     = "game_hub_dev"
-}
-
-variable "db_main_publicly_accessible" {
-  description = "Checks if the main database is accessible"
-  type        = bool
-  default     = false
 }
 
 variable "db_main_multi_az" {
