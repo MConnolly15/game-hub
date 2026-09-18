@@ -2,9 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Rocket Rush</title>
+    <link rel="stylesheet" th:href="@{/rocket-rush/css/rocket-rush.css}">
 </head>
 <body>
+    <main>
+        <h1>Rocket Rush</h1>
 
+        <div class="game-container">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+        </div>
+
+        <div class="game-controls">
+            <button id="startButton">Start Game</button>
+        </div>
+
+    </main>
 </body>
 </html>

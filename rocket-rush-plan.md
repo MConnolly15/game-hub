@@ -3,7 +3,7 @@
 ## Brainstorm
     - Rocket moves around the screen
     - Dodge asteroids   
-    - can shoot weapons at asteroids to blow them up
+    - Can shoot weapons at asteroids to blow them up
     - You collect points for blowing up asteriods, extra points for collecting things
     - Charge weapon, pulse type weapon, lasers, bullets, torpedos 
     - 3 lives, can collect hearts for extra lives 
@@ -21,8 +21,6 @@
     - Rocket appears on screen
     - Players can move the rocket 
     - Things appear on screen (asteroids etc)
-    - Player has lives
-    - Player can lose a life
     - Player can shoot 
     - Player can dodge 
     - Score can go up/down
@@ -32,6 +30,8 @@
 
 ## Extras
     - Enemy ships can fire at the player
+    - Player has lives
+    - Player can lose a life
 
 ## 1. Requirements
     - Start game button

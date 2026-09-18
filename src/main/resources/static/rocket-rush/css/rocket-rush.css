@@ -1,0 +1,17 @@
+#gameCanvas {
+    border: 2px solid black;
+    background: black;
+    justify-content: center;
+    align-items: center;
+}
+
+.game-container {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    min-height: 80vh;
+}
+
+h1{
+   text-align: center;
+}
