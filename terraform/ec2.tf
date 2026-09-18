@@ -14,21 +14,21 @@ data "aws_ami" "al2023" {
 }
 
 resource "aws_key_pair" "app" {
-  count = local.is_main ? 0 : 1
+  count = 1
 
   key_name   = local.resource_prefix
   public_key = var.ec2_ssh_public_key
 }
 
 resource "aws_instance" "app" {
-  count = local.is_main ? 0 : 1
+  count = 1
 
   ami                         = data.aws_ami.al2023.id
   instance_type               = "t3.micro"
   subnet_id                   = sort(data.aws_subnets.default.ids)[0]
-  vpc_security_group_ids      = [aws_security_group.ec2[0].id]
+  vpc_security_group_ids      = [aws_security_group.ec2.id]
   key_name                    = aws_key_pair.app[0].key_name
-  iam_instance_profile        = aws_iam_instance_profile.app[0].name
+  iam_instance_profile        = aws_iam_instance_profile.app.name
   associate_public_ip_address = true
 
   root_block_device {
