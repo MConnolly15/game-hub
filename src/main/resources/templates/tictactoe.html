@@ -2,30 +2,19 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Tic Tac Toe - Game Hive</title>
+  <title>TicTacToe - Game Hive</title>
   <link rel="stylesheet" href="/gamepage.css">
+  <link rel="stylesheet" th:href="@{/navbar.css}">
+
+  <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
 </head>
+
 <body>
-
-
-<header>
-  <a href="">
-    <span class="logo"><img class="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBIjgAA0GNHh_JvdefzBWpCGdzJq8Wd3bFHfd4pZc-GA&s=10" alt="GH"></span>
-    <span class="header_title">Game Hive</span>
-  </a>
-
-  <div class="site-header-user">
-    <span th:text="${username}">Username</span>
-    <button class="">
-      <img class="user_image" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlbbdPqXU3wwsJQPwkgU42saoIIg22ct8rNcFV_RU6PA&s=10" alt="Icon"></button>
-  </div>
-
-</header>
-
 <nav class="navbar">
-  <a href="" class="navbar-button">Home</a>
-  <a href="" class="navbar-button">Account</a>
-  <a href="" class="navbar-button">FAQs</a>
+  <div th:replace="~{fragments/navbar :: navbar}"></div>
 
   <form th:action="@{/logout}" method="post" class="logout-form">
 
@@ -47,8 +36,9 @@
     <a href="/" class="back-link">&larr; Back to all games</a>
 
     <h1>Tic Tac Toe</h1>
-    <p th:if="${winner != null}" th:text="${winner} + ' wins!'" class="game-status"></p>
-    <p th:if="${winner == null}" th:text="'Turn: ' + ${currentPlayer}" class="game-status"></p>
+    <p th:if="${winner != null}" th:text="${winner} + ' wins!'" class="tictactoe-game-status-over"></p>
+    <p th:if="${winner == null and isDraw}" th:text="'Its a draw!'" class="tictactoe-game-status-over"></p>
+    <p th:if="${winner == null and !isDraw}" th:text="'Turn: ' + ${currentPlayer}" class="tictactoe-game-status"></p>
 
     <div class="tictactoe_board">
       <form th:each="cell, iter : ${board}"
@@ -64,23 +54,26 @@
     </div>
 
     <form th:action="@{/game/tictactoe/reset}" method="post">
-      <button type="submit" class="reset-button">Reset Game</button>
+      <button type="submit" class="tictactoe-reset-button">Reset Game</button>
     </form>
   </div>
 </main>
 
 <footer>
+
   <div class="site-footer__column">
-    <a href="#" class="site-footer__logo">Game Hive</a>
+    <a href="/" class="site-footer__logo">Game Hive</a>
+
     <nav class="site-footer__links">
       <h3>Helpful Links</h3>
       <ul>
-        <li><a href="#">Meet the Team</a></li>
-        <li><a href="#">FAQs</a></li>
-        <li><a href="#">Contact Us</a></li>
+        <li><a href="/team">Meet the Team</a></li>
+        <li><a href="/faq">FAQs</a></li>
+        <li><a href="/contactus">Contact Us</a></li>
       </ul>
     </nav>
   </div>
+
 </footer>
 
 </body>

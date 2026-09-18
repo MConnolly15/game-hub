@@ -85,45 +85,166 @@ header a {
     NavBar CSS
 -----------------------------------*/
 
-/*.navbar {*/
-/*    width: 100%;*/
-/*    background-color: #fcba06;*/
-/*    color: white;*/
-/*    height: 50px;*/
+.navbar {
+    width: 100%;
+    background-color: #fcba06;
+    color: white;
+    height: 50px;
 
-/*    display: flex;*/
-/*    align-items: center;*/
-/*    gap: 18px;*/
+    display: flex;
+    align-items: center;
+    gap: 18px;
 
-/*    padding: 12px 20px;*/
+    padding: 12px 20px;
 
-/*    box-sizing: border-box;*/
-/*}*/
+    box-sizing: border-box;
+}
 
-/*.navbar-button {*/
-/*    color: #000000;*/
-/*    font-size: 16px;*/
-/*    font-family: inherit;*/
+.navbar-button {
+    color: #000000;
+    font-size: 16px;
+    font-family: inherit;
 
-/*    text-decoration: none;*/
+    text-decoration: none;
 
-/*    background: none;*/
-/*    border: none;*/
+    background: none;
+    border: none;
 
-/*    padding: 6px 8px;*/
-/*    border-radius: 5px;*/
+    padding: 6px 8px;
+    border-radius: 5px;
 
-/*    cursor: pointer;*/
-/*}*/
+    cursor: pointer;
+}
 
-/*.navbar-button:hover {*/
-/*    background-color: rgba(255, 255, 255, 0.3);*/
-/*}*/
+.navbar-button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
 
-/*.logout-form {*/
-/*    margin: 0;*/
-/*    padding: 0;*/
-/*}*/
+.logout-form {
+    margin: 0;
+    padding: 0;
+}
+
+footer {
+    background-color: #fcba06;
+}
+
+/*----------------------------------
+    Hexagons CSS
+-----------------------------------*/
+
+.team_wrapper {
+    container-type: inline-size;
+}
+
+@property --_c {
+    syntax: "<number>";
+    initial-value: 0;
+    inherits: true;
+}
+
+.team_section {
+    --s: 250px;
+    --g: 10px;
+
+    display: flex;
+    gap: var(--g);
+    flex-wrap: wrap;
+    container-type: inline-size;
+
+    padding: 20px 20px calc(var(--s) / (4 * cos(30deg))) 20px;
+}
+
+.team_section > * {
+    width: var(--s);
+    aspect-ratio: cos(30deg);
+
+    border-radius: 50% / 25%;
+    corner-shape: bevel;
+
+    overflow: hidden;
+
+    margin-bottom: calc(var(--s) / (-4 * cos(30deg)));
+
+    --_n: round(
+            down,
+            (100cqw + var(--g)) / (var(--s) + var(--g))
+    );
+
+    --_m: round(
+            down,
+            (100cqw - (var(--s) - var(--g)) / 2) /
+            (var(--s) + var(--g))
+    );
+
+    --_i: calc(
+            (sibling-index() - 1 + var(--_m)) /
+            (var(--_n) + var(--_m))
+    );
+
+    --_c: mod(var(--_i), 1);
+
+    margin-left: if(
+    style(--_c: 0):
+    calc((var(--s) + var(--g)) / 2);
+    else: 0;
+);
+}
+
+.team_section div {
+    display: grid;
+    place-content: center;
+
+    border: 10px solid;
+
+    box-sizing: border-box;
+
+    font: bold 28px system-ui, sans-serif;
+}
+
+.team_hexagon {
+    position: relative;
+}
+
+.team_hexagon img {
+    width: 120%;
+    height: 120%;
+
+    object-fit: cover;
+
+    display: block;
+
+    position: absolute;
+}
+
+.team_hexagon h3 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    color: #e7eddf;
+    font-size: 32px;
+    background-color: rgba(0, 0, 0, 0.65);
+    border-radius: 8px;
+    padding: 8px 16px;
+    z-index: 2;
+}
+
+.team_hexagon a {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    color: #e7eddf;
+    font-size: 32px;
+    background-color: rgba(0, 0, 0, 0.65);
+    border-radius: 8px;
+    padding: 8px 16px;
+    z-index: 2;
+    text-decoration: none;
+}
 
 
 
@@ -224,126 +345,12 @@ footer {
         padding: 6px;
     }
 
-    .game_section {
+    .team_section {
         --s: 160px;
         --g: 6px;
     }
 
-    .game_hexagon h3 {
+    .team_hexagon h3 {
         font-size: 22px;
     }
 }
-
-
-/*----------------------------------
-    TicTacToe
------------------------------------*/
-
-.game_page_wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.tictactoe_board {
-    display: grid;
-    grid-template-columns: repeat(3, 100px);
-    grid-template-rows: repeat(3, 100px);
-    gap: 6px;
-    margin: 20px 0;
-}
-
-.tictactoe_cell_form {
-    margin: 0;
-}
-
-.tictactoe_cell {
-    width: 100px;
-    height: 100px;
-    font-size: 2rem;
-    font-weight: bold;
-    background-color: #ffffff;
-    border: 2px solid #252523;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-.tictactoe_cell:disabled {
-    cursor: default;
-    background-color: #f4f4f4;
-}
-
-
-.tictactoe-game-status {
-    font-weight: 600;
-    margin-bottom: 10px;
-    font-size: 18px;
-}
-
-.tictactoe-game-status-over {
-    font-weight: 1000;
-    margin-bottom: 10px;
-    font-size: 24px;
-}
-
-.tictactoe-reset-button {
-    margin-top: 16px;
-    padding: 8px 16px;
-    background-color: #252523;
-    color: #e7eddf;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-}
-
-/*----------------------------------
-    Wordle
------------------------------------*/
-
-.wordle_game_page_wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-.wordle-grid {
-    display: grid;
-    grid-template-columns: repeat(5, auto);
-    background-color: dodgerblue;
-    padding: 10px;
-    width: 460px;
-}
-
-.wordle-letter {
-    background-color: #f1f1f1;
-    border: 1px solid black;
-    height: 60px;
-    width: 70px;
-    padding: 10px;
-    font-size: 45px;
-    text-align: center;
-    margin-bottom: 5px;
-}
-
-
-.wordle-letter.correct {
-    background-color: #6aaa64;
-    color: white;
-}
-.wordle-letter.present {
-    background-color: #c9b458;
-    color: white;
-}
-.wordle-letter.absent {
-    background-color: #787c7e;
-    color: white;
-}
-
