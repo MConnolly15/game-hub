@@ -30,7 +30,8 @@ resource "aws_db_instance" "postgres" {
   storage_type        = var.db_storage_type
   username            = var.db_master_username
   db_name             = var.db_name
-  publicly_accessible = local.is_main ? var.db_main_publicly_accessible : true
+
+  publicly_accessible = true
   multi_az            = local.is_main ? var.db_main_multi_az : false
 
   db_subnet_group_name = aws_db_subnet_group.default.name
@@ -43,7 +44,7 @@ resource "aws_db_instance" "postgres" {
 
   deletion_protection = local.is_main
   skip_final_snapshot = !local.is_main
-  apply_immediately   = !local.is_main
+  apply_immediately    = !local.is_main
 
   password = local.is_main ? "unmanaged-set-manually-in-aws" : random_password.branch_db[0].result
 
