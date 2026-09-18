@@ -1,4 +1,4 @@
-name: Lint
+name: CI & Branch Deployment
 
 on:
   push:
@@ -10,8 +10,9 @@ permissions:
   contents: read
 
 jobs:
-  terraform-lint:
-    name: Terraform Lint
+
+  terraform-validation:
+    name: Validate Terraform
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
 
@@ -28,13 +29,13 @@ jobs:
         with:
           terraform_version: "1.9.8"
 
-      - name: Terraform fmt check
+      - name: Check Terraform formatting
         run: terraform fmt -check -recursive
 
-      - name: Terraform init
+      - name: Initialise Terraform without backend
         run: terraform init -backend=false
 
-      - name: Terraform validate
+      - name: Validate Terraform configuration
         run: terraform validate
 
       - name: Setup TFLint
@@ -42,7 +43,7 @@ jobs:
         with:
           tflint_version: v0.53.0
 
-      - name: Init TFLint plugins
+      - name: Initialise TFLint plugins
         run: tflint --init
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -51,8 +52,8 @@ jobs:
         run: tflint --recursive
 
 
-  java:
-    name: Java Lint & Tests
+  java-validation:
+    name: Validate Java & Run Tests
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
 
@@ -72,26 +73,26 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
 
-      - name: Spotless check
+      - name: Run Spotless
         run: ./gradlew spotlessCheck
 
-      - name: Checkstyle
+      - name: Run Checkstyle
         run: ./gradlew checkstyleMain checkstyleTest
 
       - name: Run tests
         run: ./gradlew test
 
 
-  terraform-login:
-    name: Terraform AWS Login Check
+  aws-authentication:
+    name: Verify AWS Credentials
     needs:
-      - terraform-lint
-      - java
+      - terraform-validation
+      - java-validation
 
     if: |
       github.event_name == 'push' &&
-      needs.terraform-lint.result == 'success' &&
-      needs.java.result == 'success'
+      needs.terraform-validation.result == 'success' &&
+      needs.java-validation.result == 'success'
 
     runs-on: ubuntu-latest
 
@@ -101,32 +102,123 @@ jobs:
       AWS_DEFAULT_REGION: eu-west-2
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7
-
-      - name: Verify AWS credentials
+      - name: Verify AWS identity
         run: aws sts get-caller-identity
 
 
-  terraform-build:
-    name: Terraform Build
+  provision-infrastructure:
+    name: Provision Branch AWS Infrastructure
     needs:
-      - terraform-lint
-      - java
-      - terraform-login
+      - terraform-validation
+      - java-validation
+      - aws-authentication
 
     if: |
       github.event_name == 'push' &&
       github.ref_name != 'main' &&
-      needs.terraform-lint.result == 'success' &&
-      needs.java.result == 'success' &&
-      needs.terraform-login.result == 'success'
+      needs.terraform-validation.result == 'success' &&
+      needs.java-validation.result == 'success' &&
+      needs.aws-authentication.result == 'success'
 
     runs-on: ubuntu-latest
 
     defaults:
       run:
         working-directory: terraform
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ vars.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: eu-west-2
+      TF_VAR_branch_name: ${{ github.ref_name }}
+      TF_VAR_ec2_ssh_public_key: ${{ vars.EC2_SSH_PUBLIC_KEY }}
+
+    outputs:
+      ec2_host: ${{ steps.infrastructure.outputs.ec2_host }}
+      website_url: ${{ steps.infrastructure.outputs.website_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "1.9.8"
+
+      - name: Check deployment configuration
+        run: |
+          if [ -z "${{ vars.TF_STATE_BUCKET }}" ]; then
+            echo "TF_STATE_BUCKET has not been configured."
+            exit 1
+          fi
+
+          if [ -z "${{ vars.EC2_SSH_PUBLIC_KEY }}" ]; then
+            echo "EC2_SSH_PUBLIC_KEY has not been configured."
+            exit 1
+          fi
+
+          echo "Deployment configuration is present."
+
+      - name: Initialise branch Terraform state
+        run: |
+          echo "Branch: ${{ github.ref_name }}"
+
+          terraform init \
+            -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
+            -backend-config="key=game-hub/${{ github.ref_name }}/terraform.tfstate"
+
+      - name: Provision infrastructure
+        run: |
+          LEGACY_SUBNET="game-hive-dev-db"
+
+          if terraform state show aws_db_instance.postgres > /dev/null 2>&1; then
+            CURRENT_SUBNET="$(terraform state show aws_db_instance.postgres \
+              | grep 'db_subnet_group_name' \
+              | head -1 \
+              | cut -d '=' -f2 \
+              | tr -d ' "')"
+
+            echo "Current RDS subnet group: $CURRENT_SUBNET"
+
+            if [ "$CURRENT_SUBNET" = "$LEGACY_SUBNET" ]; then
+              echo "Legacy branch database detected."
+              echo "Recreating disposable RDS instance with branch-specific networking."
+
+              terraform apply \
+                -auto-approve \
+                -input=false \
+                -replace=aws_db_instance.postgres
+
+              exit 0
+            fi
+          fi
+
+          echo "Running normal Terraform apply."
+
+          terraform apply \
+            -auto-approve \
+            -input=false
+
+      - name: Read infrastructure outputs
+        id: infrastructure
+        run: |
+          EC2_HOST="$(terraform output -raw ec2_public_ip)"
+          WEBSITE_URL="$(terraform output -raw website_url)"
+
+          echo "ec2_host=$EC2_HOST" >> "$GITHUB_OUTPUT"
+          echo "website_url=$WEBSITE_URL" >> "$GITHUB_OUTPUT"
+
+          echo "EC2 IP: $EC2_HOST"
+          echo "Website URL: $WEBSITE_URL"
+
+
+  database-migrations:
+    name: Run Branch Database Migrations
+    needs:
+      - provision-infrastructure
+
+    runs-on: ubuntu-latest
 
     env:
       AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
@@ -153,68 +245,15 @@ jobs:
         with:
           terraform_version: "1.9.8"
 
-      - name: Check deployment variables
+      - name: Initialise Terraform state
+        working-directory: terraform
         run: |
-          if [ -z "${{ vars.TF_STATE_BUCKET }}" ]; then
-            echo "TF_STATE_BUCKET is empty or has not been configured."
-            exit 1
-          fi
-
-          if [ -z "${{ vars.EC2_SSH_PUBLIC_KEY }}" ]; then
-            echo "EC2_SSH_PUBLIC_KEY is empty or has not been configured."
-            exit 1
-          fi
-
-          if [ -z "${{ secrets.EC2_SSH_PRIVATE_KEY }}" ]; then
-            echo "EC2_SSH_PRIVATE_KEY is empty or has not been configured."
-            exit 1
-          fi
-
-          echo "Deployment variables are configured."
-
-      - name: Terraform init
-        run: |
-          echo "Deploying branch: ${{ github.ref_name }}"
-
           terraform init \
             -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
             -backend-config="key=game-hub/${{ github.ref_name }}/terraform.tfstate"
 
-      - name: Migrate legacy branch infrastructure
-        run: |
-          LEGACY_SUBNET="game-hive-dev-db"
-
-          if terraform state show aws_db_instance.postgres > /dev/null 2>&1; then
-            CURRENT_SUBNET="$(terraform state show aws_db_instance.postgres \
-              | grep 'db_subnet_group_name' \
-              | head -1 \
-              | cut -d '=' -f2 \
-              | tr -d ' "')"
-
-            echo "Current RDS subnet group: $CURRENT_SUBNET"
-
-            if [ "$CURRENT_SUBNET" = "$LEGACY_SUBNET" ]; then
-              echo "Legacy branch database detected."
-              echo "Recreating disposable branch database with branch-specific networking..."
-
-              terraform apply \
-                -auto-approve \
-                -input=false \
-                -replace=aws_db_instance.postgres
-
-              exit 0
-            fi
-          fi
-
-          echo "No legacy branch infrastructure migration required."
-
-          terraform apply \
-            -auto-approve \
-            -input=false
       - name: Run Flyway migrations
         run: |
-          cd ..
-
           DB_PASSWORD="$(terraform -chdir=terraform output -raw branch_db_password)"
 
           echo "::add-mask::$DB_PASSWORD"
@@ -224,31 +263,110 @@ jobs:
             -Pflyway.user="$(terraform -chdir=terraform output -raw rds_username)" \
             -Pflyway.password="$DB_PASSWORD"
 
-      - name: Build application
+
+  application-build:
+    name: Build Spring Boot Application
+    needs:
+      - provision-infrastructure
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      - name: Build executable JAR
+        run: ./gradlew bootJar
+
+      - name: Locate application JAR
         run: |
-          cd ..
-          ./gradlew bootJar
+          APP_JAR="$(find build/libs \
+            -maxdepth 1 \
+            -name '*.jar' \
+            ! -name '*-plain.jar' \
+            | head -1)"
 
-      - name: Get EC2 information
+          if [ -z "$APP_JAR" ]; then
+            echo "No application JAR was produced."
+            exit 1
+          fi
+
+          echo "Application JAR: $APP_JAR"
+
+          cp "$APP_JAR" build/libs/gamehub-app.jar
+
+      - name: Upload application artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gamehub-branch-application
+          path: build/libs/gamehub-app.jar
+          retention-days: 1
+
+
+  deploy-application:
+    name: Deploy Application to Branch EC2
+    needs:
+      - provision-infrastructure
+      - database-migrations
+      - application-build
+
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ vars.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: eu-west-2
+      TF_VAR_branch_name: ${{ github.ref_name }}
+      TF_VAR_ec2_ssh_public_key: ${{ vars.EC2_SSH_PUBLIC_KEY }}
+
+      EC2_HOST: ${{ needs.provision-infrastructure.outputs.ec2_host }}
+      WEBSITE_URL: ${{ needs.provision-infrastructure.outputs.website_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Download application artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: gamehub-branch-application
+          path: deployment
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "1.9.8"
+
+      - name: Initialise Terraform state
+        working-directory: terraform
         run: |
-          EC2_HOST="$(terraform output -raw ec2_public_ip)"
-          WEBSITE_URL="$(terraform output -raw website_url)"
+          terraform init \
+            -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
+            -backend-config="key=game-hub/${{ github.ref_name }}/terraform.tfstate"
 
-          echo "EC2_HOST=$EC2_HOST" >> "$GITHUB_ENV"
-          echo "WEBSITE_URL=$WEBSITE_URL" >> "$GITHUB_ENV"
-
-          echo "EC2 IP: $EC2_HOST"
-          echo "Website URL: $WEBSITE_URL"
-
-      - name: Configure SSH key
+      - name: Configure SSH
         run: |
+          if [ -z "${{ secrets.EC2_SSH_PRIVATE_KEY }}" ]; then
+            echo "EC2_SSH_PRIVATE_KEY has not been configured."
+            exit 1
+          fi
+
           mkdir -p ~/.ssh
 
           printf '%s\n' "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/game-hive
 
           chmod 600 ~/.ssh/game-hive
 
-      - name: Wait for SSH
+      - name: Wait for EC2 SSH
         run: |
           echo "Waiting for SSH on $EC2_HOST..."
 
@@ -258,28 +376,27 @@ jobs:
               exit 0
             fi
 
-            echo "Waiting for EC2 SSH..."
+            echo "Waiting for EC2..."
             sleep 10
           done
 
-          echo "EC2 SSH did not become available."
+          echo "SSH did not become available."
           exit 1
 
-      - name: Wait for EC2 setup
+      - name: Wait for EC2 bootstrap
         run: |
           ssh \
             -i ~/.ssh/game-hive \
-            -o ConnectTimeout=10 \
             ec2-user@"$EC2_HOST" \
             "sudo cloud-init status --wait"
 
-      - name: Prepare application environment
+      - name: Create application environment
         run: |
-          DB_HOST="$(terraform output -raw rds_endpoint)"
-          DB_PORT="$(terraform output -raw rds_port)"
-          DB_NAME="$(terraform output -raw rds_db_name)"
-          DB_USERNAME="$(terraform output -raw rds_username)"
-          DB_PASSWORD="$(terraform output -raw branch_db_password)"
+          DB_HOST="$(terraform -chdir=terraform output -raw rds_endpoint)"
+          DB_PORT="$(terraform -chdir=terraform output -raw rds_port)"
+          DB_NAME="$(terraform -chdir=terraform output -raw rds_db_name)"
+          DB_USERNAME="$(terraform -chdir=terraform output -raw rds_username)"
+          DB_PASSWORD="$(terraform -chdir=terraform output -raw branch_db_password)"
 
           echo "::add-mask::$DB_PASSWORD"
 
@@ -292,30 +409,11 @@ jobs:
           SERVER_PORT=8080
           EOF
 
-      - name: Find application jar
-        run: |
-          cd ..
-
-          APP_JAR="$(find build/libs \
-            -maxdepth 1 \
-            -name '*.jar' \
-            ! -name '*-plain.jar' \
-            | head -1)"
-
-          if [ -z "$APP_JAR" ]; then
-            echo "No application JAR found."
-            exit 1
-          fi
-
-          echo "Found application JAR: $APP_JAR"
-          echo "APP_JAR=$APP_JAR" >> "$GITHUB_ENV"
-
-      - name: Upload application
-        working-directory: .
+      - name: Upload application to EC2
         run: |
           scp \
             -i ~/.ssh/game-hive \
-            "$APP_JAR" \
+            deployment/gamehub-app.jar \
             ec2-user@"$EC2_HOST":/tmp/app.jar
 
           scp \
@@ -323,7 +421,7 @@ jobs:
             /tmp/app.env \
             ec2-user@"$EC2_HOST":/tmp/app.env
 
-      - name: Start application
+      - name: Install and start application
         run: |
           ssh \
             -i ~/.ssh/game-hive \
@@ -339,16 +437,30 @@ jobs:
               sudo systemctl restart gamehub
             "
 
-      - name: Check application service
+      - name: Check systemd service
         run: |
           ssh \
             -i ~/.ssh/game-hive \
             ec2-user@"$EC2_HOST" \
             "sudo systemctl status gamehub --no-pager"
 
-      - name: Check application
+
+  verify-deployment:
+    name: Verify Branch Website
+    needs:
+      - provision-infrastructure
+      - deploy-application
+
+    runs-on: ubuntu-latest
+
+    env:
+      EC2_HOST: ${{ needs.provision-infrastructure.outputs.ec2_host }}
+      WEBSITE_URL: ${{ needs.provision-infrastructure.outputs.website_url }}
+
+    steps:
+      - name: Wait for application
         run: |
-          echo "Waiting for Game Hub at $WEBSITE_URL..."
+          echo "Waiting for Game Hub at $WEBSITE_URL"
 
           for i in {1..30}; do
             if curl --fail --silent "$WEBSITE_URL" > /dev/null; then
@@ -356,20 +468,14 @@ jobs:
               exit 0
             fi
 
-            echo "Waiting for Game Hub..."
+            echo "Waiting for application..."
             sleep 5
           done
 
           echo "Game Hub did not respond."
-
-          ssh \
-            -i ~/.ssh/game-hive \
-            ec2-user@"$EC2_HOST" \
-            "sudo journalctl -u gamehub -n 100 --no-pager"
-
           exit 1
 
-      - name: Publish branch URL
+      - name: Publish branch environment
         run: |
           echo "## Game Hub Branch Environment" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
@@ -379,8 +485,9 @@ jobs:
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "**EC2 IP:** \`$EC2_HOST\`" >> "$GITHUB_STEP_SUMMARY"
 
-  terraform-destroy:
-    name: Terraform Destroy
+
+  destroy-branch-environment:
+    name: Destroy Closed Branch Environment
 
     if: |
       github.event_name == 'pull_request' &&
@@ -396,6 +503,7 @@ jobs:
       AWS_ACCESS_KEY_ID: ${{ vars.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ vars.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: eu-west-2
+
       TF_VAR_branch_name: ${{ github.head_ref }}
       TF_VAR_ec2_ssh_public_key: ${{ vars.EC2_SSH_PUBLIC_KEY }}
 
@@ -408,22 +516,13 @@ jobs:
         with:
           terraform_version: "1.9.8"
 
-      - name: Check Terraform backend variable
+      - name: Initialise branch Terraform state
         run: |
-          if [ -z "${{ vars.TF_STATE_BUCKET }}" ]; then
-            echo "TF_STATE_BUCKET is empty or has not been configured."
-            exit 1
-          fi
-
-          echo "Terraform backend is configured."
-
-      - name: Terraform init
-        run: |
-          echo "Destroying environment for branch: ${{ github.head_ref }}"
+          echo "Destroying branch: ${{ github.head_ref }}"
 
           terraform init \
             -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
             -backend-config="key=game-hub/${{ github.head_ref }}/terraform.tfstate"
 
-      - name: Terraform destroy
+      - name: Destroy branch infrastructure
         run: terraform destroy -auto-approve -input=false
