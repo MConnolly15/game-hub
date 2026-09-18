@@ -35,11 +35,11 @@ output "branch_db_password" {
 }
 
 output "ec2_public_ip" {
-  description = "Public IP of the Game Hub app instance"
-  value       = aws_instance.app[0].public_ip
+  description = "Public IP of the branch Game Hub app instance"
+  value       = local.is_main ? null : aws_instance.app[0].public_ip
 }
 
 output "website_url" {
-  description = "URL for the deployed Game Hub application"
-  value       = "http://${aws_instance.app[0].public_ip}:${var.app_port}"
+  description = "URL for the deployed branch Game Hub application"
+  value       = local.is_main ? null : "http://${aws_instance.app[0].public_ip}:${var.app_port}"
 }

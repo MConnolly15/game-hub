@@ -1,6 +1,8 @@
 resource "aws_security_group" "ec2" {
+  count = local.is_main ? 0 : 1
+
   name        = "${local.resource_prefix}-ec2"
-  description = "Game Hub app instance: SSH and app port open"
+  description = "Game Hub branch app instance: SSH and app port open"
   vpc_id      = data.aws_vpc.default.id
 
   ingress {
@@ -36,16 +38,8 @@ resource "aws_security_group" "rds_main" {
   count = local.is_main ? 1 : 0
 
   name        = "${local.resource_prefix}-rds-main"
-  description = "Game Hub database: Postgres from the app instance only"
+  description = "Security group for the main Game Hub database"
   vpc_id      = data.aws_vpc.default.id
-
-  ingress {
-    description     = "Postgres from app instance"
-    from_port       = 5432
-    to_port         = 5432
-    protocol        = "tcp"
-    security_groups = [aws_security_group.ec2.id]
-  }
 
   lifecycle {
     create_before_destroy = true
@@ -84,6 +78,8 @@ data "aws_iam_policy_document" "ec2_assume_role" {
 }
 
 resource "aws_iam_role" "ec2_app" {
+  count = local.is_main ? 0 : 1
+
   name               = "${local.resource_prefix}-ec2-app"
   assume_role_policy = data.aws_iam_policy_document.ec2_assume_role.json
 }
@@ -102,12 +98,16 @@ data "aws_iam_policy_document" "ec2_app_ssm_read" {
 }
 
 resource "aws_iam_role_policy" "ec2_app_ssm_read" {
+  count = local.is_main ? 0 : 1
+
   name   = "ssm-read"
-  role   = aws_iam_role.ec2_app.id
+  role   = aws_iam_role.ec2_app[0].id
   policy = data.aws_iam_policy_document.ec2_app_ssm_read.json
 }
 
 resource "aws_iam_instance_profile" "app" {
+  count = local.is_main ? 0 : 1
+
   name = "${local.resource_prefix}-ec2-app"
-  role = aws_iam_role.ec2_app.name
+  role = aws_iam_role.ec2_app[0].name
 }
