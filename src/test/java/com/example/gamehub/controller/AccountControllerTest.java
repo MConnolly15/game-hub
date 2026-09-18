@@ -11,12 +11,13 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import com.example.gamehub.service.UserService;
 
 //This will allow me to use status() later down the line instead of longer name
@@ -78,5 +79,27 @@ class AccountControllerTest {
         verify(userService).updateUsername("daphna@example.com", "newUsername");
         verify(userService).updateEmail("daphna@example.com", "daphna@example.com");
         verify(userService).updatePassword("daphna@example.com", "newPass1");
+    }
+
+
+
+    @Test
+    @WithMockUser(username = "daphna@example.com")
+    void showsErrorWhenUsernameIsInvalid() throws Exception {
+        //doThrow simulates an actual reaction to something wrong happening, normally
+        // updateuseename doesn't give back an answer, so here we are asking for it to react esentially
+        doThrow(new IllegalArgumentException("Username cannot be shorter than 3 characters"))
+                .when(userService).updateUsername("daphna@example.com", "da");
+
+        mockMvc.perform(post("/profile")
+                        .with(csrf())
+                        .param("username", "da")
+                        .param("email", "daphna@example.com")
+                        .param("password", "newPass1"))
+                //I'm looking to get a status 200 OK because when something goes wrong I want to actually see that the
+                //messaged is displayed correctly with the error, instead of a redirect
+                .andExpect(status().isOk())
+                //checks the model to get usererror
+                .andExpect(model().attributeExists("usernameError"));
     }
 }

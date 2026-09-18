@@ -30,6 +30,8 @@ public class UserService {
         }
         User user = userRepository.findByEmail(email).orElseThrow();
         user.setUsername(newUsername);
+        userRepository.save(user);
+
     }
     public void updateEmail(String currentEmail, String newEmail){
         if(newEmail.isBlank()){
@@ -40,6 +42,8 @@ public class UserService {
         }
         User user = userRepository.findByEmail(currentEmail).orElseThrow();
         user.setEmail(newEmail);
+        userRepository.save(user);
+
     }
 
     public void updatePassword(String email, String newPassword){
@@ -55,6 +59,8 @@ public class UserService {
         User user = userRepository.findByEmail(email).orElseThrow();
         String hashedPassword = passwordEncoder.encode(newPassword);
         user.setPassword(hashedPassword);
+        userRepository.save(user);
+
     }
 
 }

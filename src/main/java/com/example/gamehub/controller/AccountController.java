@@ -49,7 +49,14 @@ public class AccountController {
   }
 
   @GetMapping("/profile")
-  public String showProfilePage(){
+  //both automatically supplied by Spring for any request to show who is logged in:
+  public String showProfilePage(Authentication authentication, Model model){
+    String loggedInUserEmail = authentication.getName();
+    //pulls the logged-in user's email out of the authentication object
+    //looking up the user and if not fown throws an error
+    User user = userRepository.findByEmail(loggedInUserEmail).orElseThrow();
+    model.addAttribute("username", user.getUsername());
+    model.addAttribute("email", user.getEmail());
     return "profile";
   }
 
@@ -58,12 +65,21 @@ public class AccountController {
           @RequestParam String username,
           @RequestParam String email,
           @RequestParam String password,
-          Authentication authentication) {
+          Authentication authentication,
+          Model model) {
 
     String loggedInUserEmail = authentication.getName();
-    userService.updateUsername(loggedInUserEmail, username);
-    userService.updateEmail(loggedInUserEmail, email);
-    userService.updatePassword(loggedInUserEmail, password);
+//attempt to run everything inside here,but if any line throws an exception
+// immediately stop and jump to the matching catch block below skipping whatever was left
+    try {
+      userService.updateUsername(loggedInUserEmail, username);
+      userService.updateEmail(loggedInUserEmail, email);
+      userService.updatePassword(loggedInUserEmail, password);
+    } catch (IllegalArgumentException exception) {
+      model.addAttribute("usernameError", exception.getMessage());
+      //the name of a view to render, then controller fetches it and renders it
+      return "profile";
+    }
 
     return "redirect:/profile";
   }

@@ -1,10 +1,97 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Profile page</title>
+    <link rel="stylesheet" th:href="@{/navbar.css}">
+    <link rel="stylesheet" href="/profile.css">
 </head>
 <body>
 
+<nav class="navbar">
+    <div th:replace="~{fragments/navbar :: navbar}"></div>
+</nav>
+
+<main>
+    <div class="register-card">
+
+        <div class="brand">
+            <h1>Game<span>Hive</span></h1>
+        </div>
+
+        <h2><span th:text="${username}">Username</span>'s Profile</h2>
+
+        <p class="subtitle">
+            Update your account details:
+        </p>
+
+        <form method="post" th:action="@{/profile}">
+
+            <input
+                    type="hidden"
+                    th:name="${_csrf.parameterName}"
+                    th:value="${_csrf.token}">
+
+            <label for="username">Username</label>
+            <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    minlength="3"
+                    maxlength="16"
+                    pattern="[A-Za-z0-9_]+"
+                    th:value="${username}"
+                    required>
+
+            <p
+                    class="error-message"
+                    th:if="${usernameError}"
+                    th:text="${usernameError}">
+            </p>
+
+            <label for="email">Email</label>
+            <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    th:value="${email}"
+                    required>
+
+            <label for="password">New password</label>
+            <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    minlength="8"
+                    maxlength="16"
+                    pattern="(?=.*[A-Za-z])(?=.*\d).{8,16}"
+                    placeholder="Leave as-is or choose a new password"
+                    required>
+
+            <button type="submit">
+                Save changes
+            </button>
+
+        </form>
+
+    </div>
+</main>
+<footer>
+
+    <div class="site-footer__column">
+        <a href="#" class="site-footer__logo">Game Hive</a>
+
+        <nav class="site-footer__links">
+            <h3>Helpful Links</h3>
+            <ul>
+                <li><a href="#">About the Team</a></li>
+                <li><a href="#">FAQs</a></li>
+                <li><a href="#">Contact Us</a></li>
+            </ul>
+        </nav>
+    </div>
+
+</footer>
 </body>
 </html>
