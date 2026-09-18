@@ -1,9 +1,11 @@
 package com.example.gamehub.controller;
 
+import com.example.gamehub.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,17 +14,23 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class TicTacToeController {
+  private final UserRepository userRepository;
+
+  public TicTacToeController(UserRepository userRepository) {
+    this.userRepository = userRepository;
+  }
 
   private static final String BOARD_KEY = "ticTacToeBoard";
   private static final String TURN_KEY = "ticTacToeTurn";
 
   @GetMapping("/game/tictactoe")
-  public ModelAndView showBoard(HttpSession session) {
-    return buildBoardView(session);
+  public ModelAndView showBoard(HttpSession session, Authentication authentication) {
+    return buildBoardView(session, authentication);
   }
 
   @PostMapping("/game/tictactoe/move")
-  public ModelAndView makeMove(@RequestParam int cellIndex, HttpSession session) {
+  public ModelAndView makeMove(
+      @RequestParam int cellIndex, HttpSession session, Authentication authentication) {
     List<String> board = getOrCreateBoard(session);
     String currentPlayer = getOrCreateTurn(session);
 
@@ -34,25 +42,38 @@ public class TicTacToeController {
       session.setAttribute(TURN_KEY, nextPlayer);
     }
 
-    return buildBoardView(session);
+    return buildBoardView(session, authentication);
   }
 
   @PostMapping("/game/tictactoe/reset")
-  public ModelAndView resetBoard(HttpSession session) {
+  public ModelAndView resetBoard(HttpSession session, Authentication authentication) {
     session.removeAttribute(BOARD_KEY);
     session.removeAttribute(TURN_KEY);
-    return buildBoardView(session);
+    return buildBoardView(session, authentication);
   }
 
-  private ModelAndView buildBoardView(HttpSession session) {
+  private ModelAndView buildBoardView(HttpSession session, Authentication authentication) {
     List<String> board = getOrCreateBoard(session);
+    String winner = checkWinner(board);
+    boolean isDraw = winner == null && isBoardFull(board);
 
     ModelAndView modelAndView = new ModelAndView("tictactoe");
     modelAndView.addObject("gameName", "tictactoe");
     modelAndView.addObject("board", board);
     modelAndView.addObject("currentPlayer", getOrCreateTurn(session));
-    modelAndView.addObject("winner", checkWinner(board));
+    modelAndView.addObject("winner", winner);
+    modelAndView.addObject("isDraw", isDraw);
+    addUsernameToModel(modelAndView, authentication);
     return modelAndView;
+  }
+
+  private void addUsernameToModel(ModelAndView modelAndView, Authentication authentication) {
+    if (authentication != null && authentication.isAuthenticated()) {
+      String email = authentication.getName();
+      userRepository
+          .findByEmail(email)
+          .ifPresent(user -> modelAndView.addObject("username", user.getUsername()));
+    }
   }
 
   private List<String> getOrCreateBoard(HttpSession session) {
@@ -90,5 +111,9 @@ public class TicTacToeController {
       }
     }
     return null;
+  }
+
+  private boolean isBoardFull(List<String> board) {
+    return board.stream().noneMatch(String::isEmpty);
   }
 }
