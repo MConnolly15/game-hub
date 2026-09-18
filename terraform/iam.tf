@@ -2,7 +2,7 @@ resource "aws_security_group" "ec2" {
   count = local.is_main ? 0 : 1
 
   name        = "${local.resource_prefix}-ec2"
-  description = "Game Hub branch app instance: SSH and app port open"
+  description = "Game Hub app instance: SSH and app port open"
   vpc_id      = data.aws_vpc.default.id
 
   ingress {
