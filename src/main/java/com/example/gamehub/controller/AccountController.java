@@ -2,18 +2,18 @@ package com.example.gamehub.controller;
 
 import com.example.gamehub.model.User;
 import com.example.gamehub.repository.UserRepository;
-import com.example.gamehub.service.UserService;
 import com.example.gamehub.service.CustomUserDetailsService;
+import com.example.gamehub.service.UserService;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 
 @Controller
 public class AccountController {
@@ -23,7 +23,11 @@ public class AccountController {
   private final UserService userService;
   private final CustomUserDetailsService customUserDetailsService;
 
-  public AccountController(UserRepository userRepository, PasswordEncoder passwordEncoder, UserService userService, CustomUserDetailsService customUserDetailsService) {
+  public AccountController(
+      UserRepository userRepository,
+      PasswordEncoder passwordEncoder,
+      UserService userService,
+      CustomUserDetailsService customUserDetailsService) {
     this.userRepository = userRepository;
     this.passwordEncoder = passwordEncoder;
     this.userService = userService;
@@ -37,10 +41,10 @@ public class AccountController {
 
   @PostMapping("/register")
   public String registerUser(
-          @RequestParam String username,
-          @RequestParam String email,
-          @RequestParam String password,
-          Model model) {
+      @RequestParam String username,
+      @RequestParam String email,
+      @RequestParam String password,
+      Model model) {
 
     if (userRepository.existsByUsernameIgnoreCase(username)) {
       model.addAttribute("usernameError", "Username already taken.");
@@ -66,11 +70,11 @@ public class AccountController {
 
   @PostMapping("/profile")
   public String updateProfile(
-          @RequestParam String username,
-          @RequestParam String email,
-          @RequestParam String password,
-          Authentication authentication,
-          Model model) {
+      @RequestParam String username,
+      @RequestParam String email,
+      @RequestParam String password,
+      Authentication authentication,
+      Model model) {
 
     String loggedInUserEmail = authentication.getName();
 
@@ -84,8 +88,11 @@ public class AccountController {
     }
 
     UserDetails updatedUserDetails = customUserDetailsService.loadUserByUsername(email);
-    Authentication newAuth = new UsernamePasswordAuthenticationToken(
-            updatedUserDetails, authentication.getCredentials(), updatedUserDetails.getAuthorities());
+    Authentication newAuth =
+        new UsernamePasswordAuthenticationToken(
+            updatedUserDetails,
+            authentication.getCredentials(),
+            updatedUserDetails.getAuthorities());
     SecurityContextHolder.getContext().setAuthentication(newAuth);
 
     return "redirect:/profile";
