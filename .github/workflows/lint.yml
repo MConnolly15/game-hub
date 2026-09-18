@@ -145,38 +145,78 @@ jobs:
           distribution: temurin
           java-version: "21"
 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
         with:
           terraform_version: "1.9.8"
 
-      - name: Check Terraform backend variables
+      - name: Check deployment variables
         run: |
           if [ -z "${{ vars.TF_STATE_BUCKET }}" ]; then
             echo "TF_STATE_BUCKET is empty or has not been configured."
             exit 1
           fi
 
-          echo "Terraform state bucket is configured."
+          if [ -z "${{ vars.EC2_SSH_PUBLIC_KEY }}" ]; then
+            echo "EC2_SSH_PUBLIC_KEY is empty or has not been configured."
+            exit 1
+          fi
+
+          if [ -z "${{ secrets.EC2_SSH_PRIVATE_KEY }}" ]; then
+            echo "EC2_SSH_PRIVATE_KEY is empty or has not been configured."
+            exit 1
+          fi
+
+          echo "Deployment variables are configured."
 
       - name: Terraform init
         run: |
+          echo "Deploying branch: ${{ github.ref_name }}"
+
           terraform init \
             -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
             -backend-config="key=game-hub/${{ github.ref_name }}/terraform.tfstate"
 
-      - name: Import existing DB subnet group
-        if: github.ref_name == 'terraform-aws-scaffold'
+      - name: Migrate legacy branch infrastructure
         run: |
-          if ! terraform state show aws_db_subnet_group.default > /dev/null 2>&1; then
-            echo "Importing existing DB subnet group..."
-            terraform import aws_db_subnet_group.default game-hive-dev-db
-          else
-            echo "DB subnet group is already in Terraform state."
+          LEGACY_SUBNET="game-hive-dev-db"
+
+          if terraform state show aws_db_instance.postgres > /dev/null 2>&1; then
+            CURRENT_SUBNET="$(terraform state show aws_db_instance.postgres \
+              | grep 'db_subnet_group_name' \
+              | head -1 \
+              | cut -d '=' -f2 \
+              | tr -d ' "')"
+
+            echo "Current RDS subnet group: $CURRENT_SUBNET"
+
+            if [ "$CURRENT_SUBNET" = "$LEGACY_SUBNET" ]; then
+              echo "Legacy branch database detected."
+
+              if ! terraform state show aws_db_subnet_group.default > /dev/null 2>&1; then
+                echo "Importing legacy subnet group..."
+                terraform import aws_db_subnet_group.default "$LEGACY_SUBNET"
+              fi
+
+              echo "Recreating disposable branch database with branch-specific networking..."
+
+              terraform apply \
+                -auto-approve \
+                -input=false \
+                -replace=aws_db_instance.postgres
+
+              exit 0
+            fi
           fi
-          
-      - name: Terraform apply
-        run: terraform apply -auto-approve -input=false
+
+          echo "No legacy branch infrastructure migration required."
+
+          terraform apply \
+            -auto-approve \
+            -input=false
 
       - name: Run Flyway migrations
         run: |
@@ -204,7 +244,10 @@ jobs:
           echo "EC2_HOST=$EC2_HOST" >> "$GITHUB_ENV"
           echo "WEBSITE_URL=$WEBSITE_URL" >> "$GITHUB_ENV"
 
-      - name: Configure SSH
+          echo "EC2 IP: $EC2_HOST"
+          echo "Website URL: $WEBSITE_URL"
+
+      - name: Configure SSH key
         run: |
           mkdir -p ~/.ssh
 
@@ -212,7 +255,22 @@ jobs:
 
           chmod 600 ~/.ssh/game-hive
 
-          ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts
+      - name: Wait for SSH
+        run: |
+          echo "Waiting for SSH on $EC2_HOST..."
+
+          for i in {1..30}; do
+            if ssh-keyscan -H "$EC2_HOST" >> ~/.ssh/known_hosts 2>/dev/null; then
+              echo "SSH is available."
+              exit 0
+            fi
+
+            echo "Waiting for EC2 SSH..."
+            sleep 10
+          done
+
+          echo "EC2 SSH did not become available."
+          exit 1
 
       - name: Wait for EC2 setup
         run: |
@@ -245,13 +303,18 @@ jobs:
         run: |
           cd ..
 
-          APP_JAR="$(find build/libs -maxdepth 1 -name '*.jar' ! -name '*-plain.jar' | head -1)"
+          APP_JAR="$(find build/libs \
+            -maxdepth 1 \
+            -name '*.jar' \
+            ! -name '*-plain.jar' \
+            | head -1)"
 
           if [ -z "$APP_JAR" ]; then
             echo "No application JAR found."
             exit 1
           fi
 
+          echo "Found application JAR: $APP_JAR"
           echo "APP_JAR=$APP_JAR" >> "$GITHUB_ENV"
 
       - name: Upload application
@@ -279,11 +342,21 @@ jobs:
               sudo chown gamehub:gamehub /opt/gamehub/app.env &&
               sudo chmod 600 /opt/gamehub/app.env &&
               sudo systemctl daemon-reload &&
+              sudo systemctl enable gamehub &&
               sudo systemctl restart gamehub
             "
 
+      - name: Check application service
+        run: |
+          ssh \
+            -i ~/.ssh/game-hive \
+            ec2-user@"$EC2_HOST" \
+            "sudo systemctl status gamehub --no-pager"
+
       - name: Check application
         run: |
+          echo "Waiting for Game Hub at $WEBSITE_URL..."
+
           for i in {1..30}; do
             if curl --fail --silent "$WEBSITE_URL" > /dev/null; then
               echo "Game Hub is running."
@@ -295,6 +368,12 @@ jobs:
           done
 
           echo "Game Hub did not respond."
+
+          ssh \
+            -i ~/.ssh/game-hive \
+            ec2-user@"$EC2_HOST" \
+            "sudo journalctl -u gamehub -n 100 --no-pager"
+
           exit 1
 
       - name: Publish branch URL
@@ -304,9 +383,11 @@ jobs:
           echo "**Branch:** \`${{ github.ref_name }}\`" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
           echo "**URL:** $WEBSITE_URL" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "**EC2 IP:** \`$EC2_HOST\`" >> "$GITHUB_STEP_SUMMARY"
 
-  destroy-branch-database:
-    name: Destroy Branch Database
+  terraform-destroy:
+    name: Terraform Destroy
 
     if: |
       github.event_name == 'pull_request' &&
@@ -323,7 +404,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: ${{ vars.AWS_SECRET_ACCESS_KEY }}
       AWS_DEFAULT_REGION: eu-west-2
       TF_VAR_branch_name: ${{ github.head_ref }}
-      TF_VAR_ec2_ssh_public_key: "unused-branch-db-only"
+      TF_VAR_ec2_ssh_public_key: ${{ vars.EC2_SSH_PUBLIC_KEY }}
 
     steps:
       - name: Checkout
@@ -334,27 +415,19 @@ jobs:
         with:
           terraform_version: "1.9.8"
 
-      - name: Check deployment variables
+      - name: Check Terraform backend variable
         run: |
           if [ -z "${{ vars.TF_STATE_BUCKET }}" ]; then
             echo "TF_STATE_BUCKET is empty or has not been configured."
             exit 1
           fi
 
-          if [ -z "${{ vars.EC2_SSH_PUBLIC_KEY }}" ]; then
-            echo "EC2_SSH_PUBLIC_KEY is empty or has not been configured."
-            exit 1
-          fi
-
-          if [ -z "${{ secrets.EC2_SSH_PRIVATE_KEY }}" ]; then
-            echo "EC2_SSH_PRIVATE_KEY is empty or has not been configured."
-            exit 1
-          fi
-
-          echo "Deployment variables are configured."
+          echo "Terraform backend is configured."
 
       - name: Terraform init
         run: |
+          echo "Destroying environment for branch: ${{ github.head_ref }}"
+
           terraform init \
             -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}" \
             -backend-config="key=game-hub/${{ github.head_ref }}/terraform.tfstate"
