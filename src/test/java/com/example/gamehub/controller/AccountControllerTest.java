@@ -2,6 +2,7 @@ package com.example.gamehub.controller;
 
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -11,7 +12,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.example.gamehub.config.SecurityConfiguration;
+import com.example.gamehub.model.User;
 import com.example.gamehub.repository.UserRepository;
+import com.example.gamehub.service.CustomUserDetailsService;
 import com.example.gamehub.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,9 +24,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import com.example.gamehub.service.CustomUserDetailsService;
-import com.example.gamehub.model.User;
-import static org.mockito.Mockito.when;
 
 // This will allow me to use status() later down the line instead of longer name
 @WebMvcTest(AccountController.class)
@@ -67,52 +67,53 @@ class AccountControllerTest {
         .andExpect(redirectedUrl("/login"));
   }
 
-//  @Test
-//  @WithMockUser(username = "daphna@example.com")
-//  void updatesTheLoggedInUsersOwnAccount() throws Exception {
-//    mockMvc
-//        .perform(
-//            post("/profile")
-//                // Spring Security blocks post requests without a valid CSRF token by default,
-//                // this tells MockMvc to attach a valid fake token so the request isn't rejected on
-//                // that technicality
-//                .with(csrf())
-//                // simulates a submitted form field, same idea as a real browser POST:
-//                .param("username", "newUsername")
-//                .param("email", "daphna@example.com")
-//                .param("password", "newPass1"))
-//        // this checks if after submission , were we redirect somewhere (like back to /profile)
-//        .andExpect(status().is3xxRedirection());
-//    // this checks that the method was actually called, controller only return values like
-//    // "redirect:.."
-//    // and by doing the below I can see that the controller correctly delegated to the service.
-//    verify(userService).updateUsername("daphna@example.com", "newUsername");
-//    verify(userService).updateEmail("daphna@example.com", "daphna@example.com");
-//    verify(userService).updatePassword("daphna@example.com", "newPass1");
-//  }
+  //  @Test
+  //  @WithMockUser(username = "daphna@example.com")
+  //  void updatesTheLoggedInUsersOwnAccount() throws Exception {
+  //    mockMvc
+  //        .perform(
+  //            post("/profile")
+  //                // Spring Security blocks post requests without a valid CSRF token by default,
+  //                // this tells MockMvc to attach a valid fake token so the request isn't rejected
+  // on
+  //                // that technicality
+  //                .with(csrf())
+  //                // simulates a submitted form field, same idea as a real browser POST:
+  //                .param("username", "newUsername")
+  //                .param("email", "daphna@example.com")
+  //                .param("password", "newPass1"))
+  //        // this checks if after submission , were we redirect somewhere (like back to /profile)
+  //        .andExpect(status().is3xxRedirection());
+  //    // this checks that the method was actually called, controller only return values like
+  //    // "redirect:.."
+  //    // and by doing the below I can see that the controller correctly delegated to the service.
+  //    verify(userService).updateUsername("daphna@example.com", "newUsername");
+  //    verify(userService).updateEmail("daphna@example.com", "daphna@example.com");
+  //    verify(userService).updatePassword("daphna@example.com", "newPass1");
+  //  }
 
   @Test
   @WithMockUser(username = "daphna@example.com")
   void updatesTheLoggedInUsersOwnAccount() throws Exception {
     org.springframework.security.core.userdetails.User fakeUserDetails =
-            new org.springframework.security.core.userdetails.User(
-                    "daphna@example.com", "hashedPassword", java.util.List.of());
+        new org.springframework.security.core.userdetails.User(
+            "daphna@example.com", "hashedPassword", java.util.List.of());
     when(customUserDetailsService.loadUserByUsername("daphna@example.com"))
-            .thenReturn(fakeUserDetails);
+        .thenReturn(fakeUserDetails);
 
     mockMvc
-            .perform(
-                    post("/profile")
-                            // Spring Security blocks post requests without a valid CSRF token by default,
-                            // this tells MockMvc to attach a valid fake token so the request isn't rejected on
-                            // that technicality
-                            .with(csrf())
-                            // simulates a submitted form field, same idea as a real browser POST:
-                            .param("username", "newUsername")
-                            .param("email", "daphna@example.com")
-                            .param("password", "newPass1"))
-            // this checks if after submission , were we redirect somewhere (like back to /profile)
-            .andExpect(status().is3xxRedirection());
+        .perform(
+            post("/profile")
+                // Spring Security blocks post requests without a valid CSRF token by default,
+                // this tells MockMvc to attach a valid fake token so the request isn't rejected on
+                // that technicality
+                .with(csrf())
+                // simulates a submitted form field, same idea as a real browser POST:
+                .param("username", "newUsername")
+                .param("email", "daphna@example.com")
+                .param("password", "newPass1"))
+        // this checks if after submission , were we redirect somewhere (like back to /profile)
+        .andExpect(status().is3xxRedirection());
     // this checks that the method was actually called, controller only return values like
     // "redirect:.."
     // and by doing the below I can see that the controller correctly delegated to the service.
