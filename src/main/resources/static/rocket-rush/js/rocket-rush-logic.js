@@ -27,12 +27,14 @@ export function createRocket(game) {
     game.rocket = {
         x: 375,
         y: 525,
-        speed: 5
+        speed: 5,
+        width: 70,
+        height: 70
     };
 }
 
 export function moveRocketRight(game) {
-    if (game.rocket.x + game.rocket.speed <= 800) {
+    if (game.rocket.x + game.rocket.speed + game.rocket.width <= 800) {
         game.rocket.x += game.rocket.speed;
     }
 }
@@ -44,40 +46,69 @@ export function moveRocketLeft(game) {
 }
 
 export function loseLife(game){
-    game.lives--;
+    if (game.lives > 0) {
+        game.lives--;
+    }
 
-    if(game.lives === 0){
+    if (game.lives === 0){
         game.status = "gameOver";
     }
 }
 
 export function createBullet(game){
-    game.bullets.push({});
+    const bulletWidth = 14;
+    const bulletHeight = 28;
+
+    game.bullets.push({
+        width: bulletWidth,
+        height: bulletHeight,
+        speed: 10,
+        x: game.rocket.x + game.rocket.width / 2 - bulletWidth / 2,
+        y: game.rocket.y - bulletHeight
+    });
 }
 
 export function moveBullet(game) {
-    game.bullets[0].y -= game.bullets[0].speed;
-}
-
-export function bulletHitAsteroid(game) {
-    const bullet = game.bullets[0];
-    const asteroid = game.asteroids[0];
-
-    if (bullet.x === asteroid.x && bullet.y === asteroid.y) {
-        return true;
-    } else {
-        return false;
+    for (const bullet of game.bullets){
+        bullet.y -= bullet.speed;
     }
 }
 
-export function createAsteroid(game){
-    game.asteroids.push({});
+export function bulletHitAsteroid(game) {
+
+    for (const asteroid of game.asteroids) {
+
+        for (const bullet of game.bullets) {
+
+            if (
+                bullet.x < asteroid.x + asteroid.width &&
+                bullet.x + bullet.width > asteroid.x &&
+                bullet.y < asteroid.y + asteroid.height &&
+                bullet.y + bullet.height > asteroid.y
+            ) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
-export function destroyAsteroid(game) {
+export function createAsteroid(game, x = 100){
+    game.asteroids.push({
+        width: 65,
+        height: 65,
+        x: x,
+        y: 0,
+        speed: 14,
+        sprite: Math.floor(Math.random() * 3)
+    });
+}
+
+export function destroyAsteroid(game, asteroidIndex) {
     //0 = start at first item of the array
     //1 = remove one item from array
-    game.asteroids.splice(0, 1);
+    game.asteroids.splice(asteroidIndex, 1);
 }
 
 export function addScore(game){
@@ -92,4 +123,84 @@ export function restartGame(game) {
     startGame(game);
     game.timer = 0;
     game.score = 0;
+    game.bullets = [];
+    game.asteroids = [];
+}
+
+export function removeBullet(game, bulletIndex = 0) {
+    game.bullets.splice(bulletIndex, 1);
+}
+
+export function moveAsteroid(game) {
+    for(const asteroid of game.asteroids){
+        asteroid.y += asteroid.speed;
+    }
+}
+
+export function handleBulletAsteroidCollision(game) {
+    for (let asteroidIndex = 0; asteroidIndex < game.asteroids.length; asteroidIndex++) {
+        const asteroid = game.asteroids[asteroidIndex];
+
+        const hitboxPadding = 8;
+
+        for (let bulletIndex = 0; bulletIndex < game.bullets.length; bulletIndex++) {
+            const bullet = game.bullets[bulletIndex];
+
+            if (
+                bullet.x < asteroid.x + asteroid.width - hitboxPadding &&
+                bullet.x + bullet.width > asteroid.x + hitboxPadding &&
+                bullet.y < asteroid.y + asteroid.height - hitboxPadding &&
+                bullet.y + bullet.height > asteroid.y + hitboxPadding
+            ) {
+                removeBullet(game, bulletIndex);
+                destroyAsteroid(game, asteroidIndex);
+                addScore(game);
+                return;
+            }
+        }
+    }
+}
+
+export function asteroidHitRocket(game) {
+    for (const asteroid of game.asteroids) {
+        if (
+            game.rocket.x < asteroid.x + asteroid.width &&
+            game.rocket.x + game.rocket.width > asteroid.x &&
+            game.rocket.y < asteroid.y + asteroid.height &&
+            game.rocket.y + game.rocket.height > asteroid.y
+        ) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+export function handleAsteroidRocketCollision(game) {
+    for (let asteroidIndex = 0; asteroidIndex < game.asteroids.length; asteroidIndex++) {
+        const asteroid = game.asteroids[asteroidIndex];
+
+        if (
+            game.rocket.x < asteroid.x + asteroid.width &&
+            game.rocket.x + game.rocket.width > asteroid.x &&
+            game.rocket.y < asteroid.y + asteroid.height &&
+            game.rocket.y + game.rocket.height > asteroid.y
+        ) {
+            loseLife(game);
+            destroyAsteroid(game, asteroidIndex);
+            return;
+        }
+    }
+}
+
+export function removeOffscreenAsteroids(game) {
+    game.asteroids = game.asteroids.filter((asteroid) => {
+        return asteroid.y < 600;
+    });
+}
+
+export function removeOffscreenBullets(game) {
+    game.bullets = game.bullets.filter((bullet) => {
+        return bullet.y > 0;
+    });
 }

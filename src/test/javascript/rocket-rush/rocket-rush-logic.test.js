@@ -13,7 +13,14 @@ import {
     destroyAsteroid,
     addScore,
     removeScore,
-    restartGame
+    restartGame,
+    removeBullet,
+    moveAsteroid,
+    handleBulletAsteroidCollision,
+    asteroidHitRocket,
+    handleAsteroidRocketCollision,
+    removeOffscreenAsteroids,
+    removeOffscreenBullets
     } from "../../../main/resources/static/rocket-rush/js/rocket-rush-logic.js";
 import { describe, expect, it } from "vitest";
 
@@ -126,7 +133,8 @@ describe("Rocket Rush game logic", () => {
         const game = {
             rocket: {
                 x: 100,
-                speed: 5
+                speed: 5,
+                width: 50
             }
         }
 
@@ -214,6 +222,10 @@ describe("Rocket Rush game logic", () => {
     // Test 14 - Bullet is created
     it("players bullet is created", () =>{
         const game = {
+            rocket: {
+                x: 375,
+                width: 50
+            },
             bullets: []
         }
 
@@ -253,12 +265,16 @@ describe("Rocket Rush game logic", () => {
                 {
                     x: 100,
                     y: 100,
+                    width: 10,
+                    height: 20
                 }
             ],
             asteroids: [
                 {
                     x: 100,
-                    y: 100
+                    y: 100,
+                    width: 50,
+                    height: 50
                 }
             ]
         }
@@ -359,7 +375,626 @@ it("rocket has a movement speed of 5", () => {
     expect(game.rocket.speed).toBe(5);
 });
 
-//rocket size/width
+// Test 26 - rocket size/width
 it("rocket has a width of 50", () => {
+    const game = {
+        rocket: null
+    }
 
-})
+    createRocket(game);
+
+    expect(game.rocket.width).toBe(50);
+});
+
+//Test 27 - rocket has a height
+it("rocket has a height of 50", () => {
+    const game = {
+        rocket: null
+    }
+
+    createRocket(game);
+    expect(game.rocket.height).toBe(50);
+});
+
+// Test 28 - rocket boundary
+it("rocket should not go past the boundary", () => {
+    const game = {
+        rocket: {
+            x: 750,
+            width: 50,
+            speed: 5
+        }
+    };
+
+    moveRocketRight(game);
+    expect(game.rocket.x).toBe(750);
+});
+
+//Test 29 - creating bullets width
+it("create game with bullet", () => {
+    const game = {
+        rocket: {
+            x: 375,
+            width: 50
+        },
+        bullets: []
+    };
+
+    createBullet(game);
+    expect(game.bullets[0].width).toBe(10);
+});
+
+//Test 30 - creating bullets height
+it("create game with bullet", () => {
+    const game = {
+        rocket:{
+            x: 375,
+            width: 50
+        },
+        bullets: []
+    };
+
+    createBullet(game);
+    expect(game.bullets[0].height).toBe(20);
+});
+
+// Test 31 - bullet movement
+it("bullet movement with a speed of 10", () => {
+    const game = {
+        rocket: {
+            x: 375,
+            width: 50
+        },
+        bullets: []
+    };
+
+    createBullet(game);
+    expect(game.bullets[0].speed).toBe(10);
+});
+
+// Test 32 - bullet middle of rocket
+it("bullet starts in the middle of the rocket", () => {
+    const game = {
+        rocket: {
+            x: 375,
+            width: 50
+        },
+        bullets: []
+    };
+
+    createBullet(game);
+
+    expect(game.bullets[0].x).toBe(395);
+});
+
+// Test 33, bullet sits directly above rocket
+it("bullet to appear above the rocket", () => {
+    const game = {
+        rocket: {
+            x: 375,
+            y: 525,
+            width: 50
+        },
+        bullets: []
+    };
+
+    createBullet(game);
+    expect(game.bullets[0].y).toBe(505);
+});
+
+// Test 34, bullet disappears
+it("bullet disappears when it hits the top of the canvas", () => {
+    const game = {
+        bullets: [
+            {}
+        ]
+    }
+
+    removeBullet(game);
+    expect(game.bullets.length).toBe(0);
+});
+
+// Test 35, moveBullet() should move every bullet not just the first
+it("moves every bullet upwards", () => {
+    const game = {
+        bullets: [
+            {
+                y: 500,
+                speed: 10
+            },
+            {
+                y: 400,
+                speed: 10
+            }
+        ]
+    };
+
+    moveBullet(game);
+    expect(game.bullets[0].y).toBe(490);
+    expect(game.bullets[1].y).toBe(390);
+});
+
+// Test 36,asteroid width
+it("asteroid has a width of 50", () => {
+    const game = {
+        asteroids: []
+    };
+
+    createAsteroid(game);
+    expect(game.asteroids[0].width).toBe(50);
+});
+
+// Test 37 - asteroid height
+it("asteroid has a height of 50", () => {
+    const game = {
+        asteroids: []
+    };
+
+    createAsteroid(game);
+
+    expect(game.asteroids[0].height).toBe(50);
+});
+
+// Test 38 - asteroid starting x position
+it("asteroid starting x position", () => {
+    const game = {
+        asteroids: []
+    };
+
+    createAsteroid(game);
+    expect(game.asteroids[0].x).toBe(100);
+});
+
+// Test 39 - asteroid y position
+it("asteroid x position", () => {
+    const game = {
+        asteroids: []
+    };
+
+    createAsteroid(game);
+    expect(game.asteroids[0].y).toBe(0);
+});
+
+// Test 40 - asteroid falling speed
+it("asteroid falling speed, 10", () => {
+    const game = {
+        asteroids: []
+    };
+
+    createAsteroid(game);
+    expect(game.asteroids[0].speed).toBe(10);
+});
+
+// Test 41 - asteroid moves down
+it("asteroid moves down on screen", () => {
+    const game = {
+        asteroids: [
+            {
+                y: 100,
+                speed: 10
+            }
+        ]
+    };
+
+    moveAsteroid(game);
+    expect(game.asteroids[0].y).toBe(110);
+});
+
+// Test 42 - asteroids at different positions
+it("asteroid fall from different positions", () => {
+    const game = {
+        asteroids: []
+    };
+
+    createAsteroid(game, 300);
+    expect(game.asteroids[0].x).toBe(300);
+});
+
+// Test 43 - move every asteroid
+it("move every asteroid", () => {
+    const game = {
+        asteroids: [
+            {
+                y: 100,
+                speed: 10
+            },
+            {
+                y: 200,
+                speed: 10
+            }
+
+        ]
+    };
+
+    moveAsteroid(game);
+    expect(game.asteroids[0].y).toBe(110);
+    expect(game.asteroids[1].y).toBe(210);
+});
+
+// Test 44 - horizontal overlap(asteroids)
+it("asteroids can never overlap", () => {
+    const game = {
+        bullets: [
+            {
+                x: 120,
+                y: 100,
+                width: 10,
+                height: 20
+            }
+        ],
+        asteroids: [
+            {
+                x: 100,
+                y: 100,
+                width: 50,
+                height: 50
+            }
+        ]
+    };
+
+    const result = bulletHitAsteroid(game);
+    expect(result).toBe(true);
+});
+
+// Test 45 - collision detects another bullet
+it("detects when a later bullet hits an asteroid", () => {
+    const game = {
+        bullets: [
+            {
+                x: 10,
+                y: 10,
+                width: 10,
+                height: 20
+            },
+            {
+                x: 120,
+                y: 100,
+                width: 10,
+                height: 20
+            }
+        ],
+        asteroids: [
+            {
+                x: 100,
+                y: 100,
+                width: 50,
+                height: 50
+            }
+        ]
+    };
+
+    const result = bulletHitAsteroid(game);
+
+    expect(result).toBe(true);
+});
+
+// Test 46 - collision detects another asteroid
+it("detects when a bullet hits a later asteroid", () => {
+    const game = {
+        bullets: [
+            {
+                x: 120,
+                y: 100,
+                width: 10,
+                height: 20
+            }
+        ],
+        asteroids: [
+            {
+                x: 400,
+                y: 400,
+                width: 50,
+                height: 50
+            },
+            {
+                x: 100,
+                y: 100,
+                width: 50,
+                height: 50
+            }
+        ]
+    };
+
+    const result = bulletHitAsteroid(game);
+
+    expect(result).toBe(true);
+});
+
+// Test 47 - destroy a specific asteroid
+it("destroys the selected asteroid", () => {
+    const game = {
+        asteroids: [
+            { x: 100 },
+            { x: 300 }
+        ]
+    };
+
+    destroyAsteroid(game, 1);
+
+    expect(game.asteroids.length).toBe(1);
+    expect(game.asteroids[0].x).toBe(100);
+});
+
+// Test 48 - remove a specific bullet
+it("removes the selected bullet", () => {
+    const game = {
+        bullets: [
+            { x: 100 },
+            { x: 300 }
+        ]
+    };
+
+    removeBullet(game, 1);
+
+    expect(game.bullets.length).toBe(1);
+    expect(game.bullets[0].x).toBe(100);
+});
+
+// Test 49 - collision removes bullet and asteroid
+it("removes bullet and asteroid when they collide", () => {
+    const game = {
+        bullets: [
+            {
+                x: 120,
+                y: 100,
+                width: 10,
+                height: 20
+            }
+        ],
+        asteroids: [
+            {
+                x: 100,
+                y: 100,
+                width: 50,
+                height: 50
+            }
+        ]
+    };
+
+    handleBulletAsteroidCollision(game);
+
+    expect(game.bullets.length).toBe(0);
+    expect(game.asteroids.length).toBe(0);
+});
+
+// Test 50 - removes the bullet and asteroid that actually collided
+it("removes the correct bullet and asteroid after collision", () => {
+    const game = {
+        bullets: [
+            {
+                x: 10,
+                y: 10,
+                width: 10,
+                height: 20
+            },
+            {
+                x: 320,
+                y: 300,
+                width: 10,
+                height: 20
+            }
+        ],
+        asteroids: [
+            {
+                x: 100,
+                y: 100,
+                width: 50,
+                height: 50
+            },
+            {
+                x: 300,
+                y: 300,
+                width: 50,
+                height: 50
+            }
+        ]
+    };
+
+    handleBulletAsteroidCollision(game);
+
+    expect(game.bullets.length).toBe(1);
+    expect(game.asteroids.length).toBe(1);
+
+    expect(game.bullets[0].x).toBe(10);
+    expect(game.asteroids[0].x).toBe(100);
+});
+
+//Test 51 - shooting asteroids adds score
+it("adds 10 points when an asteroid is destroyed", () => {
+    const game = {
+        score: 0,
+        bullets: [
+            {
+                x:120,
+                y: 100,
+                width: 50,
+                height: 50
+            }
+        ],
+        asteroids: [
+            {
+                x:100,
+                y:100,
+                width: 50,
+                height: 50
+            }
+        ]
+    };
+
+    handleBulletAsteroidCollision(game);
+    expect(game.score).toBe(10);
+});
+
+// Test 52 - asteroid hits rocket
+it("detects when an asteroid hits the rocket", () => {
+    const game = {
+        rocket: {
+            x: 100,
+            y: 500,
+            width: 50,
+            height: 50
+        },
+        asteroids: [
+            {
+                x: 120,
+                y: 500,
+                width: 50,
+                height: 50
+            }
+        ]
+    };
+
+    const result = asteroidHitRocket(game);
+
+    expect(result).toBe(true);
+});
+
+// Test 53 - asteroid collision removes one life
+it("removes one life when an asteroid hits the rocket", () => {
+    const game = {
+        lives: 3,
+        rocket: {
+            x: 100,
+            y: 500,
+            width: 50,
+            height: 50
+        },
+        asteroids: [
+            {
+                x: 120,
+                y: 500,
+                width: 50,
+                height: 50
+            }
+        ]
+    };
+
+    handleAsteroidRocketCollision(game);
+
+    expect(game.lives).toBe(2);
+});
+
+// Test 54 - asteroid disappears after hitting rocket
+it("removes the asteroid after it hits the rocket", () => {
+    const game = {
+        lives: 3,
+        rocket: {
+            x: 100,
+            y: 500,
+            width: 50,
+            height: 50
+        },
+        asteroids: [
+            {
+                x: 120,
+                y: 500,
+                width: 50,
+                height: 50
+            }
+        ]
+    };
+
+    handleAsteroidRocketCollision(game);
+
+    expect(game.asteroids.length).toBe(0);
+});
+
+// Test 55 - removes the asteroid that actually hit the rocket
+it("removes the correct asteroid after hitting the rocket", () => {
+    const game = {
+        lives: 3,
+        rocket: {
+            x: 100,
+            y: 500,
+            width: 50,
+            height: 50
+        },
+        asteroids: [
+            {
+                x: 400,
+                y: 100,
+                width: 50,
+                height: 50
+            },
+            {
+                x: 120,
+                y: 500,
+                width: 50,
+                height: 50
+            }
+        ]
+    };
+
+    handleAsteroidRocketCollision(game);
+
+    expect(game.asteroids.length).toBe(1);
+    expect(game.asteroids[0].x).toBe(400);
+});
+
+// Test 56 - lives should never go below 0
+it("does not let lives go below 0", () => {
+    const game = {
+        lives: 0,
+        status: "gameOver"
+    };
+
+    loseLife(game);
+
+    expect(game.lives).toBe(0);
+});
+
+// Test 57 - restart clears bullets and asteroids
+it("clears bullets and asteroids when the game restarts", () => {
+    const game = {
+        status: "gameOver",
+        score: 30,
+        lives: 0,
+        timer: 20,
+        bullets: [
+            { x: 100 }
+        ],
+        asteroids: [
+            { x: 200 }
+        ]
+    };
+
+    restartGame(game);
+
+    expect(game.bullets.length).toBe(0);
+    expect(game.asteroids.length).toBe(0);
+});
+
+// Test 58 - removes asteroids that leave the bottom of the canvas
+it("removes an asteroid when it leaves the bottom of the canvas", () => {
+    const game = {
+        asteroids: [
+            {
+                y: 610,
+                height: 50
+            }
+        ]
+    };
+
+    removeOffscreenAsteroids(game);
+
+    expect(game.asteroids.length).toBe(0);
+});
+
+// Test 59 - removes any bullet that leaves the top of the canvas
+it("removes bullets that leave the top of the canvas", () => {
+    const game = {
+        bullets: [
+            {
+                y: 200
+            },
+            {
+                y: -10
+            }
+        ]
+    };
+
+    removeOffscreenBullets(game);
+
+    expect(game.bullets.length).toBe(1);
+    expect(game.bullets[0].y).toBe(200);
+});

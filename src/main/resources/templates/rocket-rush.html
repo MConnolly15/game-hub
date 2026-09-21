@@ -3,21 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Rocket Rush</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" th:href="@{/rocket-rush/css/rocket-rush.css}">
 </head>
+
 <body>
-    <main>
-        <h1>Rocket Rush</h1>
+<main>
+    <div class="game-container">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
 
-        <div class="game-container">
-            <canvas id="gameCanvas" width="800" height="600"></canvas>
-        </div>
+        <div class="game-title">ROCKET RUSH</div>
 
-        <div class="game-controls">
-            <button id="startButton">Start Game</button>
-        </div>
+        <button id="startButton">START GAME</button>
+    </div>
 
-    </main>
-    <script type="module" th:src="@{/rocket-rush/js/rocket-rush.js}"></script>
+</main>
+
+<script type="module" th:src="@{/rocket-rush/js/rocket-rush.js}"></script>
 </body>
 </html>
