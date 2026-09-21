@@ -1,30 +1,27 @@
 **Pinpoint game**
 
-About: Pinpoint is a word-guessing game inspired by the LinkedIn game of the same name. The player is shown a sequence of clues, 
+Pinpoint is a word-guessing game. The player is shown a sequence of clues, 
 one at a time, and tries to guess the category/connection that they all share. 
-The fewer clues needed, the better the score — up to 5 clues total, with a guess allowed after each one.
+The fewer clues needed, the better the score and there are up to 5 clues total, with a guess allowed after each one.
 
 ****User Stories****
 
 * As a user, I want to access Pinpoint from the GameHive homepage, the same way I access other games.
 
 * As a user, I want to start a game of Pinpoint and to be provided a first clue and then be able to input my guess, 
-* and continue doing that until the fifth clue which will be the last one.
+and continue doing that until the fifth clue which will be the last one.
 
 * As a user, I want to see an error if I submit a blank guess, or other invalid values. 
 
 * As a user, I want to see how many clues I've revealed and how many guesses I have left, 
-* so I know where I stand.
+so I know where I stand.
 
 * As a user, after every wrong guess of mine, I want another clue to be revealed unless
-* I reached the final clue. 
-
-* As a user, I want a new clue to be more obvious or closely related to the answer 
-* than the last. 
+I reached the final clue. 
 
 * As a user, if my input matched the answer, I want to be able to win the game
 
-* As a user, if I reached my fifth guess and it was wrong I want the game to end. 
+* As a user, if I reached my fifth guess and it was wrong I want the game to end with a loss. 
 
 * As a user, when I win, I want to see a success message showing how many clues it took me.
 
@@ -39,7 +36,7 @@ repeate the same game.
 
 ## **MVP Goals**
 
-A single hardcoded (or DB seesed) game, playable to a logged in user, with no result input provided yet (e.g."guessed in one try!"). 
+A single hardcoded (or DB seesed) game, playable to a logged in user, with no result input provided yet (e.g."Guessed in one try!"). 
 The goal is a fully working core game loop before adding game variety and user scores.
 
 ## Additional Goals
@@ -50,7 +47,7 @@ The goal is a fully working core game loop before adding game variety and user s
 For the MVP, the game just plays out in memory. A game object keeps track of how many guesses have been made and whether
 the player has won, lost, or is still in progress.
 
-When the game ends, that result gets shown on the page and then forgotten nothing is saved.
+When the game ends, that result gets shown on the page and then forgotten as nothing is saved.
 
 When I add the "guessed in X tries" feature later, I don't need to change how the game itself works,
 since it already knows everything needed (how many guesses were made, and whether it was won or lost).
@@ -64,8 +61,8 @@ Everything else about how the game is played stays exactly the same — I'm just
 
 **First part (MVP):** 
 
-I'll build one working puzzle that anyone logged in can play. I'll show a clue, take a guess, reveal more clues if wrong,
-and end the game with a win or a loss after 5 tries. I won't save anything anywhere;
+I'll build one working game that anyone logged in can play. I'll show a clue, take a guess, reveal more clues if wrong,
+and end the game with a win or a loss after 5 tries( or if guessed previously whin then. I won't save anything anywhere;
 the result will just show on the screen and then it's gone.
 
 **Middle part (next phase):** 
@@ -84,7 +81,7 @@ I'll also build a leaderboard page that reads from that same saved history to sh
 **Games table:**
 
 ID:ID primary key
-Category: varchar   - the hidden answwers/connections e.g. "things that are red" 
+Answer: varchar   - the hidden answwers/connections e.g. "things that are red" 
 
 **Clues Table:**
 
@@ -105,4 +102,31 @@ Game already tracks guessesMade and status internally, so no changes are needed 
 The save happens in GameService's guess-handling method: after calling game.submitGuess(...), 
 check if game.getStatus() is no longer IN_PROGRESS — if so, build a GameHistory 
 record from the game's own data plus the logged-in user, and save it via GameHistoryRepository. 
-The controller only needs to start passing the logged-in user into that method
+The controller only needs to start passing the logged in user into that method
+
+TO DO
+create tables, one game in there, tdd when I create a game object etc. 
+
+****## Testing****
+
+**Testing start of game:**
+
+* A new game starts with 1 clue revealed
+* A new game starts with 0 guesses made
+* A new game starts with starts in_progress
+
+**Testing a submission of a correct guess:**
+
+* A correct guess sets status to Won
+* A correct guess is possible without being sensitive to formating (e.b. Blue/blue/BLUE will be accepted)
+* A correct guess returns something like GuessResault.correct?
+
+
+
+
+
+
+
+
+
+
