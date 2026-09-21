@@ -18,6 +18,14 @@ plugins {
     id 'org.flywaydb.flyway' version '10.20.1'
 }
 
+flyway{
+    url = System.getenv('DB_URL')
+    user = System.getenv('DB_USERNAME')
+    password = System.getenv('DB_PASSWORD')
+
+    outOfOrder = true
+}
+
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
