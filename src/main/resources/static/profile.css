@@ -1,0 +1,191 @@
+body {
+    background-color: #ffc544;
+    color: #252523;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    /*align-items: center;*/
+    min-height: 100vh;
+    font-family: 'Trebuchet MS', sans-serif;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.register-card {
+    background: #e7eddf;
+    width: 100%;
+    max-width: 420px;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    height: fit-content;
+}
+
+.brand {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.brand h1 {
+    margin: 0;
+    font-size: 32px;
+}
+
+.brand span {
+    color: #faa303;
+}
+
+h2 {
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #5d2d00;
+    margin-bottom: 24px;
+}
+
+label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 18px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 16px;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+input:focus {
+    outline: none;
+    border-color: #faa303;
+}
+
+/*button[type="submit"] {*/
+/*    width: 100%;*/
+/*    padding: 12px;*/
+/*    background-color: #faa303;*/
+/*    color: #252523;*/
+/*    border: none;*/
+/*    border-radius: 8px;*/
+/*    font-size: 16px;*/
+/*    font-weight: bold;*/
+/*    cursor: pointer;*/
+/*    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);*/
+/*    transition: background-color 0.15s ease;*/
+/*}*/
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #faa303;
+    color: #252523;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.15s ease;
+}
+
+.navbar-button{
+    display: inline-block;
+    color: #252523;
+    font: inherit;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 5px 20px;
+    background-color: #faa303;
+
+    cursor: pointer;
+
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+/*button[type="submit"]:hover {*/
+/*    background: #fcba06;*/
+/*}*/
+
+button:hover {
+    background: #fcba06;
+}
+
+
+
+.error-message {
+    color: #dc2626;
+    font-size: 14px;
+    margin-top: -10px;
+    margin-bottom: 12px;
+}
+
+
+/*Footer CSS*/
+
+
+
+footer {
+    background-color: #fcba06;
+
+    margin-top: 40px;
+    padding: 30px 20px;
+
+    border-top: 1px solid #fcba06;
+}
+
+.site-footer__column {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding: 32px 24px;
+}
+
+.site-footer__logo {
+    color: #000000;
+    font-size: 22px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.site-footer__links h3 {
+    margin: 0 0 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #252523;
+    text-align: right;
+}
+
+.site-footer__links ul {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 12px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.site-footer_column a {
+    color: #252523;
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+.site-footer__links a:hover {
+    color: #e7eddf;
+}
