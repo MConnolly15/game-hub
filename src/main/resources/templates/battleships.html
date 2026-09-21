@@ -21,7 +21,8 @@
 
   <div class="site-header-user">
     <span th:text="${username}">Username</span>
-    <button class="">
+
+    <button>
       <img class="user_image"
            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlbbdPqXU3wwsJQPwkgU42saoIIg22ct8rNcFV_RU6PA&s=10"
            alt="Icon">
@@ -31,33 +32,275 @@
 
 
 <nav class="navbar">
+
   <a href="" class="navbar-button">Home</a>
   <a href="" class="navbar-button">Account</a>
   <a href="" class="navbar-button">FAQs</a>
 
   <form th:action="@{/logout}" method="post" class="logout-form">
 
-    <input
-            type="hidden"
-            th:name="${_csrf.parameterName}"
-            th:value="${_csrf.token}">
+    <input type="hidden"
+           th:name="${_csrf.parameterName}"
+           th:value="${_csrf.token}">
 
     <button type="submit" class="navbar-button">
       Logout
     </button>
 
   </form>
+
 </nav>
 
 
 <main>
+
   <div class="game_page_wrapper">
 
     <a href="/" class="back-link">&larr; Back to all games</a>
 
     <h1>Battleships</h1>
 
+
+    <!-- Winner -->
+    <h2 th:if="${winner != null}"
+        th:text="${winner == T(com.example.gamehub.model.Turn).PLAYER
+              ? 'You Win!'
+              : 'Computer Wins!'}">
+    </h2>
+
+
+    <!-- Boards, instructions and key -->
+    <div id="battleships-game"
+         class="battleships_boards_container">
+
+
+      <!-- HOW TO PLAY -->
+      <div class="battleships_instructions">
+
+        <h3>How to Play</h3>
+
+        <p>1. Place your 3-cell ship.</p>
+
+        <p>2. Choose Horizontal or Vertical.</p>
+
+        <p>3. Click a square to place your ship.</p>
+
+        <p>4. Place your 2-cell ship.</p>
+
+        <p>5. Click squares on the Computer Board to fire.</p>
+
+        <p>6. Sink both enemy ships before the computer sinks yours!</p>
+
+      </div>
+
+
+      <!-- PLAYER SIDE -->
+      <div class="battleships_board_section">
+
+        <h3>Your Board</h3>
+
+
+        <!-- Placement controls -->
+        <div class="battleships_placement_area">
+
+          <div th:if="${shipLengthToPlace > 0}"
+               class="battleships_placement">
+
+            <p th:text="'Place your ' + ${shipLengthToPlace} + '-cell ship'">
+              Place your ship
+            </p>
+
+
+            <!-- Horizontal -->
+            <label>
+              <input type="radio"
+                     name="orientation"
+                     value="true"
+                     th:checked="${selectedOrientation == null
+                     or selectedOrientation == true}">
+              Horizontal
+            </label>
+
+
+            <!-- Vertical -->
+            <label>
+              <input type="radio"
+                     name="orientation"
+                     value="false"
+                     th:checked="${selectedOrientation == false}">
+              Vertical
+            </label>
+
+          </div>
+
+        </div>
+
+
+        <!-- Space reserved for placement error -->
+        <div class="battleships_error_area">
+
+          <p th:if="${placementError != null}"
+             th:text="${placementError}"
+             class="battleships_error">
+          </p>
+
+        </div>
+
+
+        <!-- Player board -->
+        <div class="battleships_board">
+
+          <div th:each="row, rowStat : ${playerBoard}"
+               class="battleships_row">
+
+
+            <!-- Clickable cells while placing ships -->
+            <form th:each="cell, columnStat : ${row}"
+                  th:if="${shipLengthToPlace > 0}"
+                  th:action="@{/game/battleships/place}"
+                  method="post"
+                  onsubmit="setOrientation(this)">
+
+              <input type="hidden"
+                     name="row"
+                     th:value="${rowStat.index}">
+
+              <input type="hidden"
+                     name="column"
+                     th:value="${columnStat.index}">
+
+              <input type="hidden"
+                     name="horizontal"
+                     value="true">
+
+              <button type="submit"
+                      class="battleships_cell"
+                      th:classappend="${cell.name().toLowerCase()}"
+                      th:text="${cell.getSymbol()}">
+              </button>
+
+            </form>
+
+
+            <!-- Normal cells once both ships have been placed -->
+            <div th:each="cell : ${row}"
+                 th:if="${shipLengthToPlace == 0}"
+                 class="battleships_cell"
+                 th:classappend="${cell.name().toLowerCase()}"
+                 th:text="${cell.getSymbol()}">
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- COMPUTER SIDE -->
+      <div class="battleships_board_section">
+
+        <h3>Computer Board</h3>
+
+
+        <!-- Keeps computer board level with player board -->
+        <div class="battleships_placement_area">
+        </div>
+
+
+        <!-- Matches the player's error-message space -->
+        <div class="battleships_error_area">
+        </div>
+
+
+        <!-- Computer board -->
+        <div class="battleships_board">
+
+          <div th:each="row, rowStat : ${computerBoard}"
+               class="battleships_row">
+
+            <form th:each="cell, columnStat : ${row}"
+                  th:action="@{/game/battleships/fire}"
+                  method="post">
+
+              <input type="hidden"
+                     name="row"
+                     th:value="${rowStat.index}">
+
+              <input type="hidden"
+                     name="column"
+                     th:value="${columnStat.index}">
+
+              <button type="submit"
+                      class="battleships_cell"
+
+                      th:classappend="${cell == T(com.example.gamehub.model.CellState).SHIP
+                      ? 'water'
+                      : cell.name().toLowerCase()}"
+
+                      th:text="${cell == T(com.example.gamehub.model.CellState).SHIP
+                      ? '~'
+                      : cell.getSymbol()}"
+
+                      th:disabled="${shipLengthToPlace > 0
+                      or winner != null
+                      or cell == T(com.example.gamehub.model.CellState).HIT
+                      or cell == T(com.example.gamehub.model.CellState).MISS}">
+              </button>
+
+            </form>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- KEY -->
+      <div class="battleships_key">
+
+        <h3>Key</h3>
+
+        <div class="key_item">
+          <span class="key_cell ship">S</span>
+          <span>Ship</span>
+        </div>
+
+        <div class="key_item">
+          <span class="key_cell hit">X</span>
+          <span>Hit</span>
+        </div>
+
+        <div class="key_item">
+          <span class="key_cell miss">O</span>
+          <span>Miss</span>
+        </div>
+
+        <div class="key_item">
+          <span class="key_cell water">~</span>
+          <span>Water</span>
+        </div>
+
+      </div>
+
+
+    </div>
+
+
+    <!-- Reset Game -->
+    <form th:action="@{/game/battleships/reset}"
+          method="post">
+
+      <button type="submit"
+              class="battleships_reset_button">
+        Reset Game
+      </button>
+
+    </form>
+
   </div>
+
 </main>
 
 
@@ -65,9 +308,12 @@
 
   <div class="site-footer__column">
 
-    <a href="/" class="site-footer__logo">Game Hive</a>
+    <a href="/" class="site-footer__logo">
+      Game Hive
+    </a>
 
     <nav class="site-footer__links">
+
       <h3>Helpful Links</h3>
 
       <ul>
@@ -81,6 +327,24 @@
   </div>
 
 </footer>
+
+
+<script>
+
+  function setOrientation(form) {
+
+    const orientation =
+            document.querySelector(
+                    'input[name="orientation"]:checked'
+            ).value;
+
+    form.querySelector(
+            'input[name="horizontal"]'
+    ).value = orientation;
+
+  }
+
+</script>
 
 </body>
 </html>

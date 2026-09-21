@@ -299,3 +299,155 @@ footer {
     border-radius: 6px;
     cursor: pointer;
 }
+
+
+/*----------------------------------
+    TicTacToe
+-----------------------------------*/
+
+.battleships_board {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+}
+
+.battleships_row {
+    display: flex;
+}
+
+.battleships_cell {
+    width: 50px;
+    height: 50px;
+    border: 1px solid black;
+    box-sizing: border-box;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 24px;
+    background-color: #87CEEB;
+
+
+}
+
+.battleships_boards_container {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    position: relative;
+}
+
+.battleships_boards_container h2 {
+    text-align: center;
+}
+
+.battleships_row form .battleships_cell {
+    cursor: pointer;
+}
+
+.battleships_row form .battleships_cell:hover {
+    opacity: 0.8;
+}
+
+.battleships_row form {
+    margin: 0;
+    padding: 0;
+}
+
+.battleships_reset_button {
+    margin-top: 30px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.battleships_cell.ship {
+    background-color: grey;
+}
+
+.battleships_cell.hit {
+    background-color: red;
+}
+
+.battleships_cell.miss {
+    background-color: lightblue;
+}
+
+.battleships_key {
+    position: absolute;
+    left: calc(50% + 320px);
+    top: 0;
+}
+
+.key_item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.key_cell {
+    width: 30px;
+    height: 30px;
+    border: 1px solid black;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.key_cell.ship {
+    background-color: grey;
+}
+
+.key_cell.hit {
+    background-color: red;
+}
+
+.key_cell.miss {
+    background-color: lightblue;
+}
+
+.key_cell.water {
+    background-color: #87CEEB;
+}
+
+.battleships_placement_placeholder {
+    height: 61px;
+}
+
+.battleships_placement_area {
+    height: 65px;
+}
+
+.battleships_error_area {
+    height: 65px;
+    max-width: 250px;
+}
+
+.battleships_error {
+    margin: 5px 0;
+    font-size: 14px;
+    font-weight: bold;
+    color: darkred;
+}
+
+.battleships_instructions {
+    position: absolute;
+    right: calc(50% + 320px);
+    top: 0;
+    width: 220px;
+    text-align: left;
+}
+
+.battleships_instructions h3 {
+    margin-top: 0;
+}
+
+.battleships_instructions p {
+    margin: 0 0 12px 0;
+    line-height: 1.3;
+}
+

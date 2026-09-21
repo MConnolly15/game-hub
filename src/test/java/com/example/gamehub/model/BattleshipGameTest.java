@@ -25,9 +25,11 @@ public class BattleshipGameTest {
     void playerCanTakeTurn() {
         BattleshipGame game = new BattleshipGame();
 
-        game.playerFire(2,3);
+        game.playerFire(2, 3);
 
-        assertEquals(CellState.MISS, game.getComputerBoard().getGrid()[2][3]);
+        CellState result = game.getComputerBoard().getGrid()[2][3];
+
+        assertTrue(result == CellState.HIT || result == CellState.MISS);
         assertEquals(Turn.COMPUTER, game.getCurrentTurn());
     }
 
@@ -45,27 +47,37 @@ public class BattleshipGameTest {
     }
 
     @Test
-    void gameSetsUpPlayerShips() {
+    void gameStartsWithEmptyPlayerBoard() {
         BattleshipGame game = new BattleshipGame();
 
-        assertEquals(CellState.SHIP, game.getPlayerBoard().getGrid()[0][0]);
-        assertEquals(CellState.SHIP, game.getPlayerBoard().getGrid()[0][1]);
-        assertEquals(CellState.SHIP, game.getPlayerBoard().getGrid()[0][2]);
+        for (int row = 0; row < 5; row++) {
+            for (int column = 0; column < 5; column++) {
+                assertEquals(
+                        CellState.WATER,
+                        game.getPlayerBoard().getGrid()[row][column]
+                );
+            }
+        }
 
-        assertEquals(CellState.SHIP, game.getPlayerBoard().getGrid()[3][1]);
-        assertEquals(CellState.SHIP, game.getPlayerBoard().getGrid()[4][1]);
+        assertEquals(3, game.getShipLengthToPlace());
     }
 
     @Test
     void gameSetsUpComputerShips() {
         BattleshipGame game = new BattleshipGame();
 
-        assertEquals(CellState.SHIP, game.getComputerBoard().getGrid()[4][2]);
-        assertEquals(CellState.SHIP, game.getComputerBoard().getGrid()[4][3]);
-        assertEquals(CellState.SHIP, game.getComputerBoard().getGrid()[4][4]);
+        int shipCells = 0;
 
-        assertEquals(CellState.SHIP, game.getComputerBoard().getGrid()[0][0]);
-        assertEquals(CellState.SHIP, game.getComputerBoard().getGrid()[1][0]);
+        for (int row = 0; row < 5; row++) {
+            for (int column = 0; column < 5; column++) {
+
+                if (game.getComputerBoard().getGrid()[row][column] == CellState.SHIP) {
+                    shipCells++;
+                }
+            }
+        }
+
+        assertEquals(5, shipCells);
     }
 
     @Test
@@ -84,20 +96,17 @@ public class BattleshipGameTest {
     void playerWinsWhenAllComputerShipsAreDestroyed() {
         BattleshipGame game = new BattleshipGame();
 
-        // destroy all 5 computer ship cells
-        game.playerFire(0, 0);
-        game.computerTakeTurn();
+        game.placePlayerShip(0, 0, true);
+        game.placePlayerShip(3, 1, false);
 
-        game.playerFire(1, 0);
-        game.computerTakeTurn();
+        for (int row = 0; row < 5; row++) {
+            for (int column = 0; column < 5; column++) {
 
-        game.playerFire(4, 2);
-        game.computerTakeTurn();
-
-        game.playerFire(4, 3);
-        game.computerTakeTurn();
-
-        game.playerFire(4, 4);
+                if (game.getComputerBoard().getGrid()[row][column] == CellState.SHIP) {
+                    game.playerFire(row, column);
+                }
+            }
+        }
 
         assertEquals(Turn.PLAYER, game.getWinner());
     }
@@ -105,6 +114,9 @@ public class BattleshipGameTest {
     @Test
     void computerWinsWhenAllPlayerShipsAreDestroyed() {
         BattleshipGame game = new BattleshipGame();
+
+        game.placePlayerShip(0, 0, true);
+        game.placePlayerShip(3, 1, false);
 
         // destroy all 5 player ship cells
         game.playerFire(1,3);
@@ -130,6 +142,19 @@ public class BattleshipGameTest {
         BattleshipGame game = new BattleshipGame();
 
         assertNull(game.getWinner());
+    }
+
+    @Test
+    void playerCanPlaceThreeCellShip() {
+        BattleshipGame game = new BattleshipGame();
+
+        game.placePlayerShip(1, 1, true);
+
+        assertEquals(CellState.SHIP, game.getPlayerBoard().getGrid()[1][1]);
+        assertEquals(CellState.SHIP, game.getPlayerBoard().getGrid()[1][2]);
+        assertEquals(CellState.SHIP, game.getPlayerBoard().getGrid()[1][3]);
+
+        assertEquals(2, game.getShipLengthToPlace());
     }
 
 }

@@ -6,8 +6,9 @@ public class BattleshipGame {
 
     private Board playerBoard;
     private Board computerBoard;
-
     private Turn currentTurn;
+    private int shipLengthToPlace;
+
 
     public BattleshipGame() {
         playerBoard = new Board();
@@ -15,14 +16,14 @@ public class BattleshipGame {
 
         currentTurn = Turn.PLAYER;
 
-        playerBoard.placeHorizontalShip(0, 0, 3);
-        playerBoard.placeVerticalShip(3, 1, 2);
+        shipLengthToPlace = 3;
 
-        computerBoard.placeHorizontalShip(4, 2, 3);
-        computerBoard.placeVerticalShip(0, 0, 2);
+        placeRandomShip(computerBoard, 3);
+        placeRandomShip(computerBoard, 2);
     }
 
     public Board getPlayerBoard() {
+
         return playerBoard;
     }
 
@@ -32,6 +33,27 @@ public class BattleshipGame {
 
     public Turn getCurrentTurn() {
         return currentTurn;
+    }
+
+    public int getShipLengthToPlace() {
+        return shipLengthToPlace;
+    }
+
+
+
+    public void placePlayerShip(int row, int column, boolean horizontal) {
+
+        if (horizontal) {
+            playerBoard.placeHorizontalShip(row, column, shipLengthToPlace);
+        } else {
+            playerBoard.placeVerticalShip(row, column, shipLengthToPlace);
+        }
+
+        if (shipLengthToPlace == 3) {
+            shipLengthToPlace = 2;
+        } else {
+            shipLengthToPlace = 0;
+        }
     }
 
     public void playerFire(int row, int column) {
@@ -62,12 +84,45 @@ public class BattleshipGame {
     }
 
     public Turn getWinner() {
+
+        if (shipLengthToPlace != 0) {
+            return null;
+        }
+
         if (computerBoard.allShipsDestroyed()) {
             return Turn.PLAYER;
         } else if (playerBoard.allShipsDestroyed()){
             return Turn.COMPUTER;
         }
+
         return null;
+    }
+
+    private void placeRandomShip(Board board, int length) {
+
+        Random random = new Random();
+        boolean shipPlaced = false;
+
+        while (!shipPlaced) {
+
+            int row = random.nextInt(5);
+            int column = random.nextInt(5);
+            boolean horizontal = random.nextBoolean();
+
+            try {
+
+                if (horizontal) {
+                    board.placeHorizontalShip(row, column, length);
+                } else {
+                    board.placeVerticalShip(row, column, length);
+                }
+
+                shipPlaced = true;
+
+            } catch (IllegalArgumentException e) {
+                // Invalid position, so the loop tries again
+            }
+        }
     }
     
 }
