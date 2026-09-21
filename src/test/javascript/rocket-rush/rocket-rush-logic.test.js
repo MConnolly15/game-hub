@@ -327,4 +327,39 @@ it("game stays in countdown while countdown is above 0", () => {
     gameCountdown(game);
     expect(game.countdown).toBe(2);
     expect(game.status).toBe("countdown");
+});
+
+// Test 23 - rocket starts at position on canvas
+it("rocket starts at x position 375", () => {
+    const game = {
+        rocket: null
+    }
+
+    createRocket(game);
+    expect(game.rocket.x).toBe(375);
+});
+
+// Test 24 - rocket starts at position on canvas
+it("rocket starts at y position 525", () => {
+    const game = {
+        rocket: null
+    }
+
+    createRocket(game);
+    expect(game.rocket.y).toBe(525);
+});
+
+// Test 25 - rocket speed
+it("rocket has a movement speed of 5", () => {
+    const game = {
+        rocket: null
+    };
+
+    createRocket(game);
+    expect(game.rocket.speed).toBe(5);
+});
+
+//rocket size/width
+it("rocket has a width of 50", () => {
+
 })

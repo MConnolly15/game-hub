@@ -24,7 +24,11 @@ export function gameTimer(game) {
 }
 
 export function createRocket(game) {
-    game.rocket = {};
+    game.rocket = {
+        x: 375,
+        y: 525,
+        speed: 5
+    };
 }
 
 export function moveRocketRight(game) {
