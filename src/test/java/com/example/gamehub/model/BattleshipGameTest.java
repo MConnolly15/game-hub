@@ -1,160 +1,156 @@
 package com.example.gamehub.model;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
 
 public class BattleshipGameTest {
 
-    @Test
-    void gameStartsWithPlayerAndComputerBoards() {
-        BattleshipGame game = new BattleshipGame();
+  @Test
+  void gameStartsWithPlayerAndComputerBoards() {
+    BattleshipGame game = new BattleshipGame();
 
-        assertNotNull(game.getPlayerBoard());
-        assertNotNull(game.getComputerBoard());
+    assertNotNull(game.getPlayerBoard());
+    assertNotNull(game.getComputerBoard());
+  }
+
+  @Test
+  void gameStartsWithPlayerTurn() {
+    BattleshipGame game = new BattleshipGame();
+
+    assertEquals(Turn.PLAYER, game.getCurrentTurn());
+  }
+
+  @Test
+  void playerCanTakeTurn() {
+    BattleshipGame game = new BattleshipGame();
+
+    game.playerFire(2, 3);
+
+    CellState result = game.getComputerBoard().getGrid()[2][3];
+
+    assertTrue(result == CellState.HIT || result == CellState.MISS);
+    assertEquals(Turn.COMPUTER, game.getCurrentTurn());
+  }
+
+  @Test
+  void computerCanTakeTurn() {
+    BattleshipGame game = new BattleshipGame();
+
+    game.playerFire(2, 3); // player need to take their turn first
+    assertEquals(Turn.COMPUTER, game.getCurrentTurn());
+
+    game.computerFire(3, 2);
+
+    assertEquals(CellState.MISS, game.getPlayerBoard().getGrid()[3][2]);
+    assertEquals(Turn.PLAYER, game.getCurrentTurn());
+  }
+
+  @Test
+  void gameStartsWithEmptyPlayerBoard() {
+    BattleshipGame game = new BattleshipGame();
+
+    for (int row = 0; row < 5; row++) {
+      for (int column = 0; column < 5; column++) {
+        assertEquals(CellState.WATER, game.getPlayerBoard().getGrid()[row][column]);
+      }
     }
 
-    @Test
-    void gameStartsWithPlayerTurn() {
-        BattleshipGame game = new BattleshipGame();
+    assertEquals(3, game.getShipLengthToPlace());
+  }
 
-        assertEquals(Turn.PLAYER, game.getCurrentTurn());
-    }
+  @Test
+  void gameSetsUpComputerShips() {
+    BattleshipGame game = new BattleshipGame();
 
-    @Test
-    void playerCanTakeTurn() {
-        BattleshipGame game = new BattleshipGame();
+    int shipCells = 0;
 
-        game.playerFire(2, 3);
+    for (int row = 0; row < 5; row++) {
+      for (int column = 0; column < 5; column++) {
 
-        CellState result = game.getComputerBoard().getGrid()[2][3];
-
-        assertTrue(result == CellState.HIT || result == CellState.MISS);
-        assertEquals(Turn.COMPUTER, game.getCurrentTurn());
-    }
-
-    @Test
-    void computerCanTakeTurn() {
-        BattleshipGame game = new BattleshipGame();
-
-        game.playerFire(2,3); // player need to take their turn first
-        assertEquals(Turn.COMPUTER, game.getCurrentTurn());
-
-        game.computerFire(3,2);
-
-        assertEquals(CellState.MISS, game.getPlayerBoard().getGrid()[3][2]);
-        assertEquals(Turn.PLAYER, game.getCurrentTurn());
-    }
-
-    @Test
-    void gameStartsWithEmptyPlayerBoard() {
-        BattleshipGame game = new BattleshipGame();
-
-        for (int row = 0; row < 5; row++) {
-            for (int column = 0; column < 5; column++) {
-                assertEquals(
-                        CellState.WATER,
-                        game.getPlayerBoard().getGrid()[row][column]
-                );
-            }
+        if (game.getComputerBoard().getGrid()[row][column] == CellState.SHIP) {
+          shipCells++;
         }
-
-        assertEquals(3, game.getShipLengthToPlace());
+      }
     }
 
-    @Test
-    void gameSetsUpComputerShips() {
-        BattleshipGame game = new BattleshipGame();
+    assertEquals(5, shipCells);
+  }
 
-        int shipCells = 0;
+  @Test
+  void computerTakesRandomTurnAndReturnsTurnToPlayer() {
+    BattleshipGame game = new BattleshipGame();
 
-        for (int row = 0; row < 5; row++) {
-            for (int column = 0; column < 5; column++) {
+    game.playerFire(2, 3);
+    assertEquals(Turn.COMPUTER, game.getCurrentTurn());
 
-                if (game.getComputerBoard().getGrid()[row][column] == CellState.SHIP) {
-                    shipCells++;
-                }
-            }
+    game.computerTakeTurn();
+
+    assertEquals(Turn.PLAYER, game.getCurrentTurn());
+  }
+
+  @Test
+  void playerWinsWhenAllComputerShipsAreDestroyed() {
+    BattleshipGame game = new BattleshipGame();
+
+    game.placePlayerShip(0, 0, true);
+    game.placePlayerShip(3, 1, false);
+
+    for (int row = 0; row < 5; row++) {
+      for (int column = 0; column < 5; column++) {
+
+        if (game.getComputerBoard().getGrid()[row][column] == CellState.SHIP) {
+          game.playerFire(row, column);
         }
-
-        assertEquals(5, shipCells);
+      }
     }
 
-    @Test
-    void computerTakesRandomTurnAndReturnsTurnToPlayer() {
-        BattleshipGame game = new BattleshipGame();
+    assertEquals(Turn.PLAYER, game.getWinner());
+  }
 
-        game.playerFire(2, 3);
-        assertEquals(Turn.COMPUTER, game.getCurrentTurn());
+  @Test
+  void computerWinsWhenAllPlayerShipsAreDestroyed() {
+    BattleshipGame game = new BattleshipGame();
 
-        game.computerTakeTurn();
+    game.placePlayerShip(0, 0, true);
+    game.placePlayerShip(3, 1, false);
 
-        assertEquals(Turn.PLAYER, game.getCurrentTurn());
-    }
+    // destroy all 5 player ship cells
+    game.playerFire(1, 3);
+    game.computerFire(0, 0);
 
-    @Test
-    void playerWinsWhenAllComputerShipsAreDestroyed() {
-        BattleshipGame game = new BattleshipGame();
+    game.playerFire(2, 4);
+    game.computerFire(0, 1);
 
-        game.placePlayerShip(0, 0, true);
-        game.placePlayerShip(3, 1, false);
+    game.playerFire(3, 2);
+    game.computerFire(0, 2);
 
-        for (int row = 0; row < 5; row++) {
-            for (int column = 0; column < 5; column++) {
+    game.playerFire(4, 1);
+    game.computerFire(3, 1);
 
-                if (game.getComputerBoard().getGrid()[row][column] == CellState.SHIP) {
-                    game.playerFire(row, column);
-                }
-            }
-        }
+    game.playerFire(1, 4);
+    game.computerFire(4, 1);
 
-        assertEquals(Turn.PLAYER, game.getWinner());
-    }
+    assertEquals(Turn.COMPUTER, game.getWinner());
+  }
 
-    @Test
-    void computerWinsWhenAllPlayerShipsAreDestroyed() {
-        BattleshipGame game = new BattleshipGame();
+  @Test
+  void gameStartsWithNoWinner() {
+    BattleshipGame game = new BattleshipGame();
 
-        game.placePlayerShip(0, 0, true);
-        game.placePlayerShip(3, 1, false);
+    assertNull(game.getWinner());
+  }
 
-        // destroy all 5 player ship cells
-        game.playerFire(1,3);
-        game.computerFire(0, 0);
+  @Test
+  void playerCanPlaceThreeCellShip() {
+    BattleshipGame game = new BattleshipGame();
 
-        game.playerFire(2, 4);
-        game.computerFire(0,1);
+    game.placePlayerShip(1, 1, true);
 
-        game.playerFire(3, 2);
-        game.computerFire(0,2);
+    assertEquals(CellState.SHIP, game.getPlayerBoard().getGrid()[1][1]);
+    assertEquals(CellState.SHIP, game.getPlayerBoard().getGrid()[1][2]);
+    assertEquals(CellState.SHIP, game.getPlayerBoard().getGrid()[1][3]);
 
-        game.playerFire(4, 1);
-        game.computerFire(3,1);
-
-        game.playerFire(1, 4);
-        game.computerFire(4,1);
-
-        assertEquals(Turn.COMPUTER, game.getWinner());
-    }
-
-    @Test
-    void gameStartsWithNoWinner() {
-        BattleshipGame game = new BattleshipGame();
-
-        assertNull(game.getWinner());
-    }
-
-    @Test
-    void playerCanPlaceThreeCellShip() {
-        BattleshipGame game = new BattleshipGame();
-
-        game.placePlayerShip(1, 1, true);
-
-        assertEquals(CellState.SHIP, game.getPlayerBoard().getGrid()[1][1]);
-        assertEquals(CellState.SHIP, game.getPlayerBoard().getGrid()[1][2]);
-        assertEquals(CellState.SHIP, game.getPlayerBoard().getGrid()[1][3]);
-
-        assertEquals(2, game.getShipLengthToPlace());
-    }
-
+    assertEquals(2, game.getShipLengthToPlace());
+  }
 }
