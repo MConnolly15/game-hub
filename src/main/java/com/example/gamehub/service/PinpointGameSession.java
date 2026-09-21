@@ -31,6 +31,10 @@ public class PinpointGameSession {
     return status;
   }
 
+  public PinpointGame getGame() {
+    return game;
+  }
+
   //    when someone submits a guess, I check if it matches the answer (not caring about capital
   // letters).
   //    If it matches, I mark the game as won.If not, nothing happens yet
@@ -57,11 +61,13 @@ public class PinpointGameSession {
     // game.getAnswer calls the getter on the PinpointGame object this session is holding onto,
     // retrieving its stored answer
     // EqualIgnoreCase compares two strings for equality and ignores cap sensitivity
+
+    guessesMade++;
+
     if (guess.equalsIgnoreCase(game.getAnswer())) {
       status = PinpointGameStatus.WON;
       return PinpointGuessResult.CORRECT;
     } else {
-      guessesMade++;
       // if 5 guesses have been made, the game ends as a loss:
       if (guessesMade >= 5) {
         status = PinpointGameStatus.LOST;

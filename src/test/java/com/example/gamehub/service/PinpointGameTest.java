@@ -249,7 +249,7 @@ class PinpointGameTest {
     assertThrows(IllegalStateException.class, () -> session.submitGuess("anything"));
     // this checks that the status is still won and that the session is still at 0
     assertEquals(PinpointGameStatus.WON, session.getStatus());
-    assertEquals(0, session.getGuessesMade());
+    assertEquals(1, session.getGuessesMade());
   }
 
   // Given a PinpointGameSession that is in progress
