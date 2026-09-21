@@ -119,7 +119,24 @@ create tables, one game in there, tdd when I create a game object etc.
 
 * A correct guess sets status to Won
 * A correct guess is possible without being sensitive to formating (e.b. Blue/blue/BLUE will be accepted)
-* A correct guess returns something like GuessResault.correct?
+* A correct guess returns something like GuessResult.CORRECT
+
+**Submitting incorrect guess**
+
+* An inccorrect guess increases NumberOfCluesRevealed by 1
+* An incorrect guess increases guessesMade by 1
+* An incorrect guess keeps status as IN_PROGRESS
+* An incorrect guess returns GuessResult.INCORRECT
+
+**Submitting an Incorrect guess on the final (5th) try**
+
+Status changes to LOST
+No further clue is given
+Returns GuessResult.GAME_OVER
+
+**Trying to guess when the game ended**
+
+
 
 
 
