@@ -21,7 +21,7 @@ import {
     handleAsteroidRocketCollision,
     removeOffscreenAsteroids,
     removeOffscreenBullets
-    } from "../../../main/resources/static/rocket-rush/js/rocket-rush-logic.js";
+} from "../../../main/resources/static/rocket-rush/js/rocket-rush-logic.js";
 import { describe, expect, it } from "vitest";
 
 describe("Rocket Rush game logic", () => {
@@ -97,12 +97,12 @@ describe("Rocket Rush game logic", () => {
     it("game timer goes up when the game starts playing", () => {
         const game = {
             status: "playing",
-            timer: 0
+            timer: 60
         }
 
         gameTimer(game);
 
-        expect(game.timer).toBe(1);
+        expect(game.timer).toBe(59);
     });
 
     // Test 6B - Timer does not increase when game is not playing
@@ -329,7 +329,7 @@ describe("Rocket Rush game logic", () => {
         expect(game.status).toBe("countdown");
         expect(game.score).toBe(0);
         expect(game.lives).toBe(3);
-        expect(game.timer).toBe(0);
+        expect(game.timer).toBe(60);
     })
 });
 
@@ -376,24 +376,24 @@ it("rocket has a movement speed of 5", () => {
 });
 
 // Test 26 - rocket size/width
-it("rocket has a width of 50", () => {
+it("rocket has a width of 70", () => {
     const game = {
         rocket: null
     }
 
     createRocket(game);
 
-    expect(game.rocket.width).toBe(50);
+    expect(game.rocket.width).toBe(70);
 });
 
 //Test 27 - rocket has a height
-it("rocket has a height of 50", () => {
+it("rocket has a height of 70", () => {
     const game = {
         rocket: null
     }
 
     createRocket(game);
-    expect(game.rocket.height).toBe(50);
+    expect(game.rocket.height).toBe(70);
 });
 
 // Test 28 - rocket boundary
@@ -411,7 +411,7 @@ it("rocket should not go past the boundary", () => {
 });
 
 //Test 29 - creating bullets width
-it("create game with bullet", () => {
+it("bullet has a width of 14", () => {
     const game = {
         rocket: {
             x: 375,
@@ -421,11 +421,11 @@ it("create game with bullet", () => {
     };
 
     createBullet(game);
-    expect(game.bullets[0].width).toBe(10);
+    expect(game.bullets[0].width).toBe(14);
 });
 
 //Test 30 - creating bullets height
-it("create game with bullet", () => {
+it("bullet has a height of 28", () => {
     const game = {
         rocket:{
             x: 375,
@@ -435,7 +435,7 @@ it("create game with bullet", () => {
     };
 
     createBullet(game);
-    expect(game.bullets[0].height).toBe(20);
+    expect(game.bullets[0].height).toBe(28);
 });
 
 // Test 31 - bullet movement
@@ -464,7 +464,7 @@ it("bullet starts in the middle of the rocket", () => {
 
     createBullet(game);
 
-    expect(game.bullets[0].x).toBe(395);
+    expect(game.bullets[0].x).toBe(393);
 });
 
 // Test 33, bullet sits directly above rocket
@@ -479,7 +479,7 @@ it("bullet to appear above the rocket", () => {
     };
 
     createBullet(game);
-    expect(game.bullets[0].y).toBe(505);
+    expect(game.bullets[0].y).toBe(497);
 });
 
 // Test 34, bullet disappears
@@ -515,24 +515,24 @@ it("moves every bullet upwards", () => {
 });
 
 // Test 36,asteroid width
-it("asteroid has a width of 50", () => {
+it("asteroid has a width of 65", () => {
     const game = {
         asteroids: []
     };
 
     createAsteroid(game);
-    expect(game.asteroids[0].width).toBe(50);
+    expect(game.asteroids[0].width).toBe(65);
 });
 
 // Test 37 - asteroid height
-it("asteroid has a height of 50", () => {
+it("asteroid has a height of 65", () => {
     const game = {
         asteroids: []
     };
 
     createAsteroid(game);
 
-    expect(game.asteroids[0].height).toBe(50);
+    expect(game.asteroids[0].height).toBe(65);
 });
 
 // Test 38 - asteroid starting x position
@@ -556,13 +556,13 @@ it("asteroid x position", () => {
 });
 
 // Test 40 - asteroid falling speed
-it("asteroid falling speed, 10", () => {
+it("asteroid falling speed, 16", () => {
     const game = {
         asteroids: []
     };
 
     createAsteroid(game);
-    expect(game.asteroids[0].speed).toBe(10);
+    expect(game.asteroids[0].speed).toBe(16);
 });
 
 // Test 41 - asteroid moves down
@@ -997,4 +997,40 @@ it("removes bullets that leave the top of the canvas", () => {
 
     expect(game.bullets.length).toBe(1);
     expect(game.bullets[0].y).toBe(200);
+});
+
+// Test 60 - game starts with 60 seconds
+it("starts the game timer at 60 seconds", () => {
+    const game = {
+        timer: 0
+    };
+
+    startGame(game);
+
+    expect(game.timer).toBe(60);
+});
+
+// Test 61 - timer counts down while playing
+it("counts the timer down while the game is playing", () => {
+    const game = {
+        status: "playing",
+        timer: 60
+    };
+
+    gameTimer(game);
+
+    expect(game.timer).toBe(59);
+});
+
+// Test 62 - game ends when timer reaches 0
+it("ends the game when the timer reaches 0", () => {
+    const game = {
+        status: "playing",
+        timer: 1
+    };
+
+    gameTimer(game);
+
+    expect(game.timer).toBe(0);
+    expect(game.status).toBe("gameOver");
 });

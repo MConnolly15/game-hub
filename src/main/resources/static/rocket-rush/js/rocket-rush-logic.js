@@ -3,6 +3,7 @@ export function startGame(game) {
     game.countdown = 3;
     game.status = "countdown";
     game.lives = 3;
+    game.timer = 60;
 
 }
 
@@ -18,8 +19,12 @@ export function gameCountdown(game) {
 }
 
 export function gameTimer(game) {
-    if (game.status === "playing") {
-        game.timer++;
+    if (game.status === "playing" && game.timer > 0) {
+        game.timer--;
+
+        if (game.timer === 0) {
+            game.status = "gameOver";
+        }
     }
 }
 
@@ -100,7 +105,7 @@ export function createAsteroid(game, x = 100){
         height: 65,
         x: x,
         y: 0,
-        speed: 14,
+        speed: 16,
         sprite: Math.floor(Math.random() * 3)
     });
 }
@@ -121,7 +126,6 @@ export function removeScore(game){
 
 export function restartGame(game) {
     startGame(game);
-    game.timer = 0;
     game.score = 0;
     game.bullets = [];
     game.asteroids = [];
@@ -138,19 +142,22 @@ export function moveAsteroid(game) {
 }
 
 export function handleBulletAsteroidCollision(game) {
+
     for (let asteroidIndex = 0; asteroidIndex < game.asteroids.length; asteroidIndex++) {
         const asteroid = game.asteroids[asteroidIndex];
 
-        const hitboxPadding = 8;
+        const asteroidPadding = 12;
 
         for (let bulletIndex = 0; bulletIndex < game.bullets.length; bulletIndex++) {
             const bullet = game.bullets[bulletIndex];
 
+            const bulletPadding = 3;
+
             if (
-                bullet.x < asteroid.x + asteroid.width - hitboxPadding &&
-                bullet.x + bullet.width > asteroid.x + hitboxPadding &&
-                bullet.y < asteroid.y + asteroid.height - hitboxPadding &&
-                bullet.y + bullet.height > asteroid.y + hitboxPadding
+                bullet.x + bulletPadding < asteroid.x + asteroid.width - asteroidPadding &&
+                bullet.x + bullet.width - bulletPadding > asteroid.x + asteroidPadding &&
+                bullet.y + bulletPadding < asteroid.y + asteroid.height - asteroidPadding &&
+                bullet.y + bullet.height - bulletPadding > asteroid.y + asteroidPadding
             ) {
                 removeBullet(game, bulletIndex);
                 destroyAsteroid(game, asteroidIndex);
@@ -177,14 +184,24 @@ export function asteroidHitRocket(game) {
 }
 
 export function handleAsteroidRocketCollision(game) {
+    const rocketPadding = 10;
+    const asteroidPadding = 8;
+
     for (let asteroidIndex = 0; asteroidIndex < game.asteroids.length; asteroidIndex++) {
         const asteroid = game.asteroids[asteroidIndex];
 
         if (
-            game.rocket.x < asteroid.x + asteroid.width &&
-            game.rocket.x + game.rocket.width > asteroid.x &&
-            game.rocket.y < asteroid.y + asteroid.height &&
-            game.rocket.y + game.rocket.height > asteroid.y
+            game.rocket.x + rocketPadding <
+            asteroid.x + asteroid.width - asteroidPadding &&
+
+            game.rocket.x + game.rocket.width - rocketPadding >
+            asteroid.x + asteroidPadding &&
+
+            game.rocket.y + rocketPadding <
+            asteroid.y + asteroid.height - asteroidPadding &&
+
+            game.rocket.y + game.rocket.height - rocketPadding >
+            asteroid.y + asteroidPadding
         ) {
             loseLife(game);
             destroyAsteroid(game, asteroidIndex);

@@ -167,6 +167,12 @@ function drawLives(){
     );
 }
 
+function drawTimer() {
+    ctx.font = "24px Orbitron";
+    ctx.textAlign = "center";
+    ctx.fillText("TIME: " + game.timer, canvas.width / 2, 35);
+}
+
 function drawGameOver(){
     ctx.font = "60px Bangers";
     ctx.textAlign = "center";
@@ -176,6 +182,9 @@ function drawGameOver(){
         canvas.width / 2,
         canvas.height / 2
     );
+
+    startButton.style.display = "block";
+    startButton.textContent = "PLAY AGAIN";
 }
 
 function drawGame(){
@@ -184,6 +193,7 @@ function drawGame(){
     drawBackground();
     drawStars();
     drawRocket();
+    drawTimer();
     drawScore();
     drawLives();
 
@@ -259,7 +269,7 @@ document.addEventListener("keydown", (event) => {
         keys.right = true;
     } else if (event.key === "ArrowLeft") {
         keys.left = true;
-    } else if (event.key === " "){
+    } else if (event.key === " " && !event.repeat) {
         event.preventDefault();
         createBullet(game);
         drawGame();
@@ -298,7 +308,7 @@ setInterval(() => {
 
         createAsteroid(game, randomX);
     }
-}, 1000);
+}, 700);
 
 setInterval(() => {
     if (game.status === "playing" && keys.right) {
@@ -318,3 +328,10 @@ setInterval(() => {
         drawGame();
     }
 }, 50);
+
+setInterval(() => {
+    if (game.status === "playing") {
+        gameTimer(game);
+        drawGame();
+    }
+}, 1000);
