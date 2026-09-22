@@ -13,10 +13,8 @@
 </head>
 
 <body>
-
 <nav class="navbar">
     <div th:replace="~{fragments/navbar :: navbar}"></div>
-
     <form th:action="@{/logout}" method="post" class="logout-form">
 
         <input
@@ -27,23 +25,25 @@
         <button type="submit" class="navbar-button">
             Logout
         </button>
-
     </form>
-
 </nav>
 
 <main>
 <div class="game_wrapper">
 <div class="game_section">
-        <div class="game_hexagon"> <a href="/game/wordle">Wordle</a>
-            <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/Wordle_196_example.svg/960px-Wordle_196_example.svg.png?utm_source=en.wikipedia.org&utm_campaign=index&utm_content=thumbnail" alt="Wordle">
-        </div>
-        <div class="game_hexagon"><a href="/game/tictactoe">Tic Tac Toe</a>
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4xQ2HHVWSQ2HVDorKhOzmzJaODndBI0ERiDz6gdK9gg&s=10" alt="">
-        </div>
+    <div class="game_hexagon"> <a href="/game/wordle">Wordle</a>
+        <img src="https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ec/Wordle_196_example.svg/960px-Wordle_196_example.svg.png?utm_source=en.wikipedia.org&utm_campaign=index&utm_content=thumbnail"
+             alt="Wordle">
+    </div>
+
+    <div class="game_hexagon"><a href="/game/tictactoe">Tic Tac Toe</a>
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4xQ2HHVWSQ2HVDorKhOzmzJaODndBI0ERiDz6gdK9gg&s=10"
+             alt="Tic Tac Toe">
+    </div>
+
     <div class="game_hexagon">
         <a href="/game/hangman">Hangman</a>
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4xQ2HHVWSQ2HVDorKhOzmzJaODndBI0ERiDz6gdK9gg&s=10"
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUgxGFieWs6TIz28y7_8zz7I_nF72WtNjOQuwjvSVojQ&s=10"
              alt="Hangman">
     </div>
 
@@ -59,27 +59,12 @@
              alt="Pinpoint">
     </div>
 
-    <div class="game_hexagon">Hexagon</div>
-        <div class="game_hexagon">Hexagon</div>
-        <div class="game_hexagon">
-            <a href="/game/battleships">Battleships</a>
-            <img src="/images/Battleships.png"
-                 alt="Battleships">
-        </div>
-
-
-        <div class="game_hexagon">Hexagon</div>
-        <div class="game_hexagon">Hexagon</div>
-        <div class="game_hexagon">Hexagon</div>
-        <div class="game_hexagon">Hexagon</div>
-        <div class="game_hexagon">Hexagon</div>
-        <div class="game_hexagon">Hexagon</div>
-        <div class="game_hexagon">Hexagon</div>
-        <div class="game_hexagon">Hexagon</div>
-        <div class="game_hexagon">Hexagon</div>
-        <div class="game_hexagon">Hexagon</div>
-        <div class="game_hexagon">Hexagon</div>
-        <div class="game_hexagon">Hexagon</div>
+    <div class="game_hexagon">
+        <a href="/game/battleships">Battleships</a>
+        <img src="/images/Battleships.png"
+             alt="Battleships">
+    </div>
+    <div class="game_hexagon"><a href="/">More games coming soon...</a></div>
 
     </div>
 </div>
