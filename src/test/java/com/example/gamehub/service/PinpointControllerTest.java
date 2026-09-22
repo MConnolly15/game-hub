@@ -5,12 +5,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
 
+import com.example.gamehub.model.ClueEntity;
+import com.example.gamehub.model.PinpointGameEntity;
 import com.example.gamehub.model.User;
+import com.example.gamehub.repository.PinpointGameRepository;
 import com.example.gamehub.repository.UserRepository;
 import com.example.gamehub.service.PinpointGame;
 import com.example.gamehub.service.PinpointGameSession;
 import com.example.gamehub.service.PinpointGameStatus;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +37,7 @@ class PinpointControllerTest {
   @Mock private UserRepository userRepository;
   @Mock private HttpSession session;
   @Mock private Authentication authentication;
+  @Mock private PinpointGameRepository pinpointGameRepository;
 
   private PinpointController controller;
   // sessionAttributes is standing for what's stored in the browser session, as the fake session
@@ -44,7 +49,7 @@ class PinpointControllerTest {
   @BeforeEach
   void setUp() {
     sessionAttributes.clear();
-    controller = new PinpointController(userRepository);
+    controller = new PinpointController(userRepository, pinpointGameRepository);
 
     lenient()
         .when(session.getAttribute(anyString()))
@@ -57,6 +62,14 @@ class PinpointControllerTest {
             })
         .when(session)
         .setAttribute(anyString(), any());
+
+    lenient()
+        .when(pinpointGameRepository.findRandomGame())
+        .thenReturn(
+            Optional.of(
+                buildGameEntity(
+                    "Things that are red",
+                    List.of("Brick", "Stop sign", "Fire truck", "Rose", "Ketchup"))));
   }
 
   // seedSession() is a helper , instead of seeing the game with raw values, this is a real pinpoint
@@ -76,6 +89,18 @@ class PinpointControllerTest {
     User user = new User();
     user.setUsername(username);
     org.mockito.Mockito.when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+  }
+
+  // builds a fake database entity for the one test that actually calls createGame() -
+  // every other test seeds the session manually and never touches the repository
+  private PinpointGameEntity buildGameEntity(String answer, List<String> clueTexts) {
+    PinpointGameEntity entity = new PinpointGameEntity(answer);
+    List<ClueEntity> clues = new ArrayList<>();
+    for (int i = 0; i < clueTexts.size(); i++) {
+      clues.add(new ClueEntity(entity, clueTexts.get(i), i + 1));
+    }
+    entity.setClues(clues);
+    return entity;
   }
 
   // ---------------------------------------------------------------------

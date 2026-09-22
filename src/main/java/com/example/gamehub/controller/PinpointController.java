@@ -1,11 +1,15 @@
 package com.example.gamehub.controller;
 
+import com.example.gamehub.model.ClueEntity;
+import com.example.gamehub.model.PinpointGameEntity;
+import com.example.gamehub.repository.PinpointGameRepository;
 import com.example.gamehub.repository.UserRepository;
 import com.example.gamehub.service.PinpointGame;
 import com.example.gamehub.service.PinpointGameSession;
 import com.example.gamehub.service.PinpointGameStatus;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,16 +23,28 @@ public class PinpointController {
   private static final String SESSION_KEY = "pinpointGameSession";
 
   private final UserRepository userRepository;
+  private final PinpointGameRepository pinpointGameRepository;
 
   // constructor
-  public PinpointController(UserRepository userRepository) {
+  public PinpointController(
+      UserRepository userRepository, PinpointGameRepository pinpointGameRepository) {
     this.userRepository = userRepository;
+    this.pinpointGameRepository = pinpointGameRepository;
   }
 
-  // builds hardcoded game, but will swap this for a database game later
+  // loads a random seeded game from the database, along with its clues in order,
+  // and turns it into a PinpointGame the game logic understands
   private PinpointGame createGame() {
-    return new PinpointGame(
-        "Things that are red", List.of("Brick", "Stop sign", "Fire truck", "Rose", "Ketchup"));
+    PinpointGameEntity entity =
+        pinpointGameRepository
+            .findRandomGame()
+            .orElseThrow(
+                () -> new IllegalStateException("No pinpoint games found in the database"));
+
+    List<String> clueTexts =
+        entity.getClues().stream().map(ClueEntity::getClueText).collect(Collectors.toList());
+
+    return new PinpointGame(entity.getAnswer(), clueTexts);
   }
 
   // This tells bootspring when a browser sends a GET req to this endpoint, run this method, and
