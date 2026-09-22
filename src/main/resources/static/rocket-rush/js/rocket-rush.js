@@ -180,10 +180,11 @@ function drawGameOver(){
     ctx.fillText(
         "GAME OVER",
         canvas.width / 2,
-        canvas.height / 2
+        canvas.height / 2 - 60
     );
 
     startButton.style.display = "block";
+    startButton.style.top = "62%";
     startButton.textContent = "PLAY AGAIN";
 }
 

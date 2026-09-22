@@ -1,4 +1,3 @@
 package com.example.gamehub;
 
-public class RocketRushControllerTest {
-}
+public class RocketRushControllerTest {}
