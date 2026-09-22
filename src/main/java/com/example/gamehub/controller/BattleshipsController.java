@@ -1,7 +1,9 @@
 package com.example.gamehub.controller;
 
 import com.example.gamehub.model.BattleshipGame;
+import com.example.gamehub.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,8 +13,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class BattleshipsController {
 
+  private final UserRepository userRepository;
+
+  public BattleshipsController(UserRepository userRepository) {
+    this.userRepository = userRepository;
+  }
+
   @GetMapping("/game/battleships")
-  public String showGame(HttpSession session, Model model) {
+  public String showGame(HttpSession session, Model model, Authentication authentication) {
 
     BattleshipGame game = (BattleshipGame) session.getAttribute("battleshipGame");
 
@@ -27,6 +35,14 @@ public class BattleshipsController {
     model.addAttribute("shipLengthToPlace", game.getShipLengthToPlace());
     model.addAttribute("placementError", session.getAttribute("placementError"));
     model.addAttribute("selectedOrientation", session.getAttribute("selectedOrientation"));
+
+    if (authentication != null && authentication.isAuthenticated()) {
+      String email = authentication.getName();
+
+      userRepository
+          .findByEmail(email)
+          .ifPresent(user -> model.addAttribute("username", user.getUsername()));
+    }
 
     return "battleships";
   }
