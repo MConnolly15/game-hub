@@ -350,6 +350,8 @@ footer {
     background-color: #eaa31e;
     padding: 10px;
     width: 460px;
+
+}
 .battleships_row form .battleships_cell {
     cursor: pointer;
 }
