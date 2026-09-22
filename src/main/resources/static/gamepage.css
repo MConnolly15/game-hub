@@ -350,6 +350,8 @@ footer {
     background-color: #eaa31e;
     padding: 10px;
     width: 460px;
+
+}
 .battleships_row form .battleships_cell {
     cursor: pointer;
 }
@@ -535,3 +537,135 @@ footer {
     }
 
 
+
+/*_____________________*/
+/*Pinpoint's CSS:*/
+
+.pinpoint-game-status {
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.pinpoint-game-status-over {
+    font-weight: 1000;
+    margin-bottom: 10px;
+    font-size: 24px;
+}
+
+
+.pinpoint-clue-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 20px auto;
+    width:600px;
+}
+.pinpoint-clue {
+    /*color: #ffffff;*/
+    color: #252523;
+    padding: 12px 16px;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+.pinpoint-clue:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.pinpoint-clue:last-child {
+    border-radius: 0 0 8px 8px;
+}
+
+.pinpoint-clue:nth-child(1) {
+    /*background-color: #cfe2ff;*/
+    /*color: #1c2b3a;*/
+    background-color: #f0bd7a;
+}
+
+.pinpoint-clue:nth-child(2) {
+    /*background-color: #9dbdec;*/
+    /*color: #1c2b3a;*/
+    background-color: #eca868;
+
+}
+
+.pinpoint-clue:nth-child(3) {
+    /*background-color: #6a97d8;*/
+    background-color: #e8935c;
+
+}
+
+.pinpoint-clue:nth-child(4) {
+    /*background-color: #3a6bb0;*/
+    background-color: #e47c5a;
+
+}
+
+.pinpoint-clue:nth-child(5) {
+    /*background-color: #163d78;*/
+    background-color: #e0645a;
+
+}
+
+.pinpoint-reset-button {
+    margin-top: 16px;
+    padding: 8px 16px;
+    background-color: #252523;
+    color: #e7eddf;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.pinpoint-submit-button{
+    display: inline-block;
+    color: #252523;
+    font: inherit;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 5px 20px;
+    background-color: #faa303;
+    cursor: pointer;
+}
+
+.pinpoint-guess-input {
+    height: 45px;
+    width: 200px;
+    padding: 8px 12px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.pinpoint-layout {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    /*gap: 40px;*/
+    /*padding: 20px;*/
+    gap: 100px;
+    padding: 20px;
+}
+
+.pinpoint-how-to-play {
+    text-align: left;
+    max-width: 220px;
+}
+
+.pinpoint-how-to-play h2 {
+    margin-bottom: 10px;
+}
+
+.pinpoint-how-to-play ol {
+    padding-left: 20px;
+}
+
+.pinpoint-how-to-play li {
+    margin-bottom: 10px;
+}
+.pinpoint-page-wrapper {
+    margin: 0;
+}
+/*_________*/
