@@ -31,8 +31,13 @@ public class PinpointController {
         "things that are red", List.of("Brick", "Stop sign", "Fire truck", "Rose", "Ketchup"));
   }
 
+  // This tells bootspring when a browser sends a GET req to this endpoint, run this method, and
+  // Spring
+  // supplies session and authentication to see if user is logged in:
+
   @GetMapping("/game/pinpoint")
   public ModelAndView loadPage(HttpSession session, Authentication authentication) {
+
     // this pulls whatever's stored under that key out of the session. It comes back as a
     // generic object, essentially telling Java that this is actually a PinpointGameSession:
     PinpointGameSession pinpointSession = (PinpointGameSession) session.getAttribute(SESSION_KEY);
@@ -54,13 +59,15 @@ public class PinpointController {
   @PostMapping("/game/pinpoint/guess")
   // This runs when the visitor submits the guess form
   public ModelAndView submitGuess(
-      // takes the session
+      // takes the session and below tries to run the game logic
+      // if it meets an error (blank,nums etc) it catches it and saves the exception's message text
+      // instead of crashing the app
       @RequestParam("guess") String guess, HttpSession session, Authentication authentication) {
     PinpointGameSession pinpointSession = (PinpointGameSession) session.getAttribute(SESSION_KEY);
 
     String error = null;
     try {
-      // tries to use the written logic and if it doesn't work to error loe with an exception
+      // tries to use the written logic and if it doesn't work to error out with an exception
       pinpointSession.submitGuess(guess);
     } catch (IllegalArgumentException | IllegalStateException e) {
       error = e.getMessage();
@@ -106,7 +113,8 @@ public class PinpointController {
   }
 
   // reset game:
-
+  // this always rebuilds a  new game and session, just overides it, stores it and displays a fresh
+  // state of the game
   @PostMapping("/game/pinpoint/reset")
   public ModelAndView resetGame(HttpSession session, Authentication authentication) {
     PinpointGame game = createGame();

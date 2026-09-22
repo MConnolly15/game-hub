@@ -19,32 +19,43 @@
 </nav>
 
 <main>
-    <div class="game_page_wrapper">
-        <a href="/" class="back-link">&larr; Back to all games</a>
+    <div class="pinpoint-layout">
+        <div class="pinpoint-how-to-play">
+            <h2>How to Play</h2>
+            <ol>
+                <li>You'll see one clue to start the game</li>
+                <li>Type your guess for the hidden connection</li>
+                <li>Wrong guess? Don't worry, another clue will be revealed!</li>
+                <li>You have 5 guesses in total to get it right</li>
+                <li>Guess correctly to win!</li>
+            </ol>
+        </div>
 
-        <h1>Pinpoint</h1>
+        <div class="game_page_wrapper pinpoint-page-wrapper">
+            <a href="/" class="back-link">&larr; Back to all games</a>
 
-        <p th:if="${message != null}" th:text="${message}" class="pinpoint-game-status-over"></p>
-        <p th:if="${message == null}" th:text="'Clues revealed: ' + ${cluesRevealed} + ' | Guesses made: ' + ${guessesMade}" class="pinpoint-game-status"></p>
+            <h1>Pinpoint</h1>
 
-<!--        <ul>-->
-<!--            <li th:each="clue : ${clues}" th:text="${clue}"></li>-->
-<!--        </ul>-->
-        <ul class="pinpoint-clue-list">
-            <li th:each="clue : ${clues}" th:text="${clue}" class="pinpoint-clue"></li>
-        </ul>
-        <form th:if="${message == null}" th:action="@{/game/pinpoint/guess}" method="post">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-            <input type="text" name="guess" placeholder="Your guess">
-            <button type="submit">Submit Guess</button>
-        </form>
+            <p th:if="${message != null}" th:text="${message}" class="pinpoint-game-status-over"></p>
+            <p th:if="${message == null}" th:text="'Clues revealed: ' + ${cluesRevealed} + ' | Guesses made: ' + ${guessesMade}" class="pinpoint-game-status"></p>
 
-        <p th:if="${error != null}" th:text="${error}" class="pinpoint-game-status-over"></p>
-        <form th:action="@{/game/pinpoint/reset}" method="post">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-            <button type="submit">Reset Game</button>
-        </form>
+            <ul class="pinpoint-clue-list">
+                <li th:each="clue : ${clues}" th:text="${clue}" class="pinpoint-clue"></li>
+            </ul>
 
+            <form th:if="${message == null}" th:action="@{/game/pinpoint/guess}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="text" name="guess" placeholder="Your guess" class="pinpoint-guess-input">
+                <button type="submit" class="pinpoint-submit-button">Submit Guess</button>
+            </form>
+
+            <p th:if="${error != null}" th:text="${error}" class="pinpoint-game-status-over"></p>
+
+            <form th:action="@{/game/pinpoint/reset}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button type="submit" class="pinpoint-reset-button">Reset Game</button>
+            </form>
+        </div>
     </div>
 </main>
 
