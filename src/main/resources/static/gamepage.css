@@ -504,7 +504,7 @@ footer {
     .wordle-grid {
         display: grid;
         grid-template-columns: repeat(5, auto);
-        background-color: dodgerblue;
+        background-color: #eaa31e;
         padding: 10px;
         width: 460px;
     }
