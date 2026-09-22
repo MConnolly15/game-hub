@@ -1,0 +1,95 @@
+#gameCanvas {
+    display: block;
+    border: 2px solid black;
+    background: black;
+}
+
+.game-container {
+    position: relative;
+
+    width: 800px;
+    height: 600px;
+
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+}
+
+#startButton {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    font-family: "Bangers", cursive;
+    font-size: 38px;
+    letter-spacing: 3px;
+
+    padding: 16px 50px;
+
+    color: white;
+
+    background: linear-gradient(
+            180deg,
+            #5a4df0,
+            #2d1f8f
+    );
+
+    border: 4px solid #6fe7ff;
+    border-radius: 16px;
+
+    box-shadow:
+            0 7px 0 #15104f,
+            0 0 18px rgba(111, 231, 255, 0.55),
+            0 10px 20px rgba(0, 0, 0, 0.45);
+
+    cursor: pointer;
+    z-index: 10;
+
+    transition:
+            transform 0.1s ease,
+            box-shadow 0.1s ease;
+}
+
+#startButton:hover {
+    transform: translate(-50%, -54%);
+
+    box-shadow:
+            0 9px 0 #15104f,
+            0 0 24px rgba(111, 231, 255, 0.75),
+            0 12px 22px rgba(0, 0, 0, 0.45);
+}
+
+#startButton:active {
+    transform: translate(-50%, -46%);
+
+    box-shadow:
+            0 3px 0 #15104f,
+            0 0 10px rgba(111, 231, 255, 0.45);
+}
+
+.game-title {
+    position: absolute;
+
+    top: 70px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    font-family: "Bangers", cursive;
+    font-size: 64px;
+    letter-spacing: 5px;
+
+    color: white;
+
+    text-shadow:
+            0 4px 0 #2d1f8f,
+            0 0 12px #6fe7ff,
+            0 0 25px #5a4df0;
+
+    z-index: 10;
+}
