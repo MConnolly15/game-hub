@@ -28,7 +28,7 @@ public class PinpointController {
   // builds hardcoded game, but will swap this for a database game later
   private PinpointGame createGame() {
     return new PinpointGame(
-        "things that are red", List.of("Brick", "Stop sign", "Fire truck", "Rose", "Ketchup"));
+        "Things that are red", List.of("Brick", "Stop sign", "Fire truck", "Rose", "Ketchup"));
   }
 
   // This tells bootspring when a browser sends a GET req to this endpoint, run this method, and
