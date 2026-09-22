@@ -155,12 +155,17 @@
                 type="email"
                 placeholder="you@example.com"
                 required>
+<!--        for pattern in password -the string must contain at least one letter, and at least one digit, somewhere —-->
+<!--        and overall it must be 8 to 16 characters long-->
 
         <label for="password">Password</label>
         <input
                 id="password"
                 name="password"
                 type="password"
+                minlength="8"
+                maxlength="16"
+                pattern="(?=.*[A-Za-z])(?=.*\d).{8,16}"
                 placeholder="Choose a password"
                 required>
 
