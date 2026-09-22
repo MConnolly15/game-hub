@@ -317,7 +317,7 @@ footer {
 .wordle-grid {
     display: grid;
     grid-template-columns: repeat(5, auto);
-    background-color: dodgerblue;
+    background-color: #eaa31e;
     padding: 10px;
     width: 460px;
 }
@@ -345,5 +345,31 @@ footer {
 .wordle-letter.absent {
     background-color: #787c7e;
     color: white;
+}
+
+
+/*----------------------------------
+    Hangman
+-----------------------------------*/
+
+.hangman_art {
+    font-family: monospace;
+    font-size: 18px;
+    line-height: 1.2;
+}
+
+.hangman_guess {
+    letter-spacing: 6px;
+    font-size: 24px;
+}
+
+.hangman_wrong_guess {
+    color: red;
+    font-weight: bold;
+}
+
+.hangman_right_guess {
+    color: green;
+    font-weight: bold;
 }
 
