@@ -4,11 +4,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import com.example.gamehub.model.BattleshipGame;
 import com.example.gamehub.model.CellState;
+import com.example.gamehub.model.User;
+import com.example.gamehub.repository.UserRepository;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpSession;
+import org.springframework.security.core.Authentication;
 import org.springframework.ui.ConcurrentModel;
 import org.springframework.ui.Model;
 
@@ -16,12 +22,13 @@ public class BattleshipsControllerTest {
 
   @Test
   void showGameCreatesNewGameWhenSessionHasNoGame() {
-    BattleshipsController controller = new BattleshipsController();
+    UserRepository userRepository = mock(UserRepository.class);
+    BattleshipsController controller = new BattleshipsController(userRepository);
 
     MockHttpSession session = new MockHttpSession();
     Model model = new ConcurrentModel();
 
-    String view = controller.showGame(session, model);
+    String view = controller.showGame(session, model, null);
 
     assertEquals("battleships", view);
     assertNotNull(session.getAttribute("battleshipGame"));
@@ -29,7 +36,8 @@ public class BattleshipsControllerTest {
 
   @Test
   void showGameUsesExistingGameFromSession() {
-    BattleshipsController controller = new BattleshipsController();
+    UserRepository userRepository = mock(UserRepository.class);
+    BattleshipsController controller = new BattleshipsController(userRepository);
 
     MockHttpSession session = new MockHttpSession();
     Model model = new ConcurrentModel();
@@ -37,7 +45,7 @@ public class BattleshipsControllerTest {
     BattleshipGame existingGame = new BattleshipGame();
     session.setAttribute("battleshipGame", existingGame);
 
-    String view = controller.showGame(session, model);
+    String view = controller.showGame(session, model, null);
 
     assertEquals("battleships", view);
     assertEquals(existingGame, session.getAttribute("battleshipGame"));
@@ -45,7 +53,8 @@ public class BattleshipsControllerTest {
 
   @Test
   void resetCreatesANewGame() {
-    BattleshipsController controller = new BattleshipsController();
+    UserRepository userRepository = mock(UserRepository.class);
+    BattleshipsController controller = new BattleshipsController(userRepository);
 
     MockHttpSession session = new MockHttpSession();
 
@@ -63,7 +72,8 @@ public class BattleshipsControllerTest {
 
   @Test
   void fireAllowsPlayerToFireAtComputerBoard() {
-    BattleshipsController controller = new BattleshipsController();
+    UserRepository userRepository = mock(UserRepository.class);
+    BattleshipsController controller = new BattleshipsController(userRepository);
 
     MockHttpSession session = new MockHttpSession();
     BattleshipGame game = new BattleshipGame();
@@ -78,7 +88,8 @@ public class BattleshipsControllerTest {
 
   @Test
   void placeShipAllowsValidShipPlacement() {
-    BattleshipsController controller = new BattleshipsController();
+    UserRepository userRepository = mock(UserRepository.class);
+    BattleshipsController controller = new BattleshipsController(userRepository);
 
     MockHttpSession session = new MockHttpSession();
     BattleshipGame game = new BattleshipGame();
@@ -94,7 +105,8 @@ public class BattleshipsControllerTest {
 
   @Test
   void placeShipShowsErrorForInvalidPlacement() {
-    BattleshipsController controller = new BattleshipsController();
+    UserRepository userRepository = mock(UserRepository.class);
+    BattleshipsController controller = new BattleshipsController(userRepository);
 
     MockHttpSession session = new MockHttpSession();
     BattleshipGame game = new BattleshipGame();
@@ -109,5 +121,27 @@ public class BattleshipsControllerTest {
         session.getAttribute("placementError"));
 
     assertEquals(true, session.getAttribute("selectedOrientation"));
+  }
+
+  @Test
+  void showGameAddsUsernameToModel() {
+    UserRepository userRepository = mock(UserRepository.class);
+    Authentication authentication = mock(Authentication.class);
+
+    User user = new User("cquinn22", "test@example.com", "password");
+
+    when(authentication.isAuthenticated()).thenReturn(true);
+    when(authentication.getName()).thenReturn("test@example.com");
+    when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
+
+    BattleshipsController controller = new BattleshipsController(userRepository);
+
+    MockHttpSession session = new MockHttpSession();
+    Model model = new ConcurrentModel();
+
+    String view = controller.showGame(session, model, authentication);
+
+    assertEquals("battleships", view);
+    assertEquals("cquinn22", model.getAttribute("username"));
   }
 }
