@@ -344,6 +344,12 @@ footer {
     text-align: center;
 }
 
+.wordle-grid {
+    display: grid;
+    grid-template-columns: repeat(5, auto);
+    background-color: #eaa31e;
+    padding: 10px;
+    width: 460px;
 .battleships_row form .battleships_cell {
     cursor: pointer;
 }
@@ -433,6 +439,32 @@ footer {
     font-size: 14px;
     font-weight: bold;
     color: darkred;
+}
+
+
+/*----------------------------------
+    Hangman
+-----------------------------------*/
+
+.hangman_art {
+    font-family: monospace;
+    font-size: 18px;
+    line-height: 1.2;
+}
+
+.hangman_guess {
+    letter-spacing: 6px;
+    font-size: 24px;
+}
+
+.hangman_wrong_guess {
+    color: red;
+    font-weight: bold;
+}
+
+.hangman_right_guess {
+    color: green;
+    font-weight: bold;
 }
 
 .battleships_instructions {
