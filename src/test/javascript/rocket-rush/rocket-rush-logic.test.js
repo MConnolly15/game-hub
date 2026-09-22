@@ -1022,7 +1022,7 @@ it("counts the timer down while the game is playing", () => {
     expect(game.timer).toBe(59);
 });
 
-// Test 62 - game ends when timer reaches 0
+// Test 62 - game ends when timer reaches 0...
 it("ends the game when the timer reaches 0", () => {
     const game = {
         status: "playing",
