@@ -31,45 +31,40 @@ import org.springframework.test.web.servlet.MockMvc;
 // names the test class
 class AccountControllerTest {
 
-  @Autowired
-  private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
   // give me a fake userRepo
-  @MockitoBean
-  private UserRepository userRepository;
+  @MockitoBean private UserRepository userRepository;
   // give me a fake password
-  @MockitoBean
-  private PasswordEncoder passwordEncoder;
+  @MockitoBean private PasswordEncoder passwordEncoder;
 
-  @MockitoBean
-  private UserService userService;
-  @MockitoBean
-  private CustomUserDetailsService customUserDetailsService;
+  @MockitoBean private UserService userService;
+  @MockitoBean private CustomUserDetailsService customUserDetailsService;
 
   // fake web requests:
 
   @Test
   // tells it to run this
   @WithMockUser(username = "daphna")
-    // test user is logged in for this test
+  // test user is logged in for this test
   void loggedInUserCanAccessAccountPage() throws Exception {
     User user = new User("daphna", "daphna", "hashedPassword");
     when(userRepository.findByEmail("daphna")).thenReturn(java.util.Optional.of(user));
     // names what this test checks
     mockMvc
-            .perform(get("/profile"))
-            // sends a fake request
-            .andExpect(status().isOk());
+        .perform(get("/profile"))
+        // sends a fake request
+        .andExpect(status().isOk());
   }
 
   @Test
-    // by not using @WithMockUser essentially I am not a signed in user
+  // by not using @WithMockUser essentially I am not a signed in user
   void unauthenticatedUserCannotAccessAccountPage() throws Exception {
     mockMvc
-            .perform(get("/profile"))
-            // checks that this is a redirect
-            .andExpect(status().is3xxRedirection())
-            // as this is not a real server listening, no need for port in this case
-            .andExpect(redirectedUrl("/login"));
+        .perform(get("/profile"))
+        // checks that this is a redirect
+        .andExpect(status().is3xxRedirection())
+        // as this is not a real server listening, no need for port in this case
+        .andExpect(redirectedUrl("/login"));
   }
 
   //  @Test
@@ -101,24 +96,24 @@ class AccountControllerTest {
   @WithMockUser(username = "daphna@example.com")
   void updatesTheLoggedInUsersOwnAccount() throws Exception {
     org.springframework.security.core.userdetails.User fakeUserDetails =
-            new org.springframework.security.core.userdetails.User(
-                    "daphna@example.com", "hashedPassword", java.util.List.of());
+        new org.springframework.security.core.userdetails.User(
+            "daphna@example.com", "hashedPassword", java.util.List.of());
     when(customUserDetailsService.loadUserByUsername("daphna@example.com"))
-            .thenReturn(fakeUserDetails);
+        .thenReturn(fakeUserDetails);
 
     mockMvc
-            .perform(
-                    post("/profile")
-                            // Spring Security blocks post requests without a valid CSRF token by default,
-                            // this tells MockMvc to attach a valid fake token so the request isn't rejected on
-                            // that technicality
-                            .with(csrf())
-                            // simulates a submitted form field, same idea as a real browser POST:
-                            .param("username", "newUsername")
-                            .param("email", "daphna@example.com")
-                            .param("password", "newPass1"))
-            // this checks if after submission , were we redirect somewhere (like back to /profile)
-            .andExpect(status().is3xxRedirection());
+        .perform(
+            post("/profile")
+                // Spring Security blocks post requests without a valid CSRF token by default,
+                // this tells MockMvc to attach a valid fake token so the request isn't rejected on
+                // that technicality
+                .with(csrf())
+                // simulates a submitted form field, same idea as a real browser POST:
+                .param("username", "newUsername")
+                .param("email", "daphna@example.com")
+                .param("password", "newPass1"))
+        // this checks if after submission , were we redirect somewhere (like back to /profile)
+        .andExpect(status().is3xxRedirection());
     // this checks that the method was actually called, controller only return values like
     // "redirect:.."
     // and by doing the below I can see that the controller correctly delegated to the service.
@@ -133,21 +128,21 @@ class AccountControllerTest {
     // doThrow simulates an actual reaction to something wrong happening, normally
     // updateuseename doesn't give back an answer, so here we are asking for it to react esentially
     doThrow(new IllegalArgumentException("Username cannot be shorter than 3 characters"))
-            .when(userService)
-            .updateUsername("daphna@example.com", "da");
+        .when(userService)
+        .updateUsername("daphna@example.com", "da");
 
     mockMvc
-            .perform(
-                    post("/profile")
-                            .with(csrf())
-                            .param("username", "da")
-                            .param("email", "daphna@example.com")
-                            .param("password", "newPass1"))
-            // I'm looking to get a status 200 OK because when something goes wrong I want to actually
-            // see that the
-            // messaged is displayed correctly with the error, instead of a redirect
-            .andExpect(status().isOk())
-            // checks the model to get usererror
-            .andExpect(model().attributeExists("usernameError"));
+        .perform(
+            post("/profile")
+                .with(csrf())
+                .param("username", "da")
+                .param("email", "daphna@example.com")
+                .param("password", "newPass1"))
+        // I'm looking to get a status 200 OK because when something goes wrong I want to actually
+        // see that the
+        // messaged is displayed correctly with the error, instead of a redirect
+        .andExpect(status().isOk())
+        // checks the model to get usererror
+        .andExpect(model().attributeExists("usernameError"));
   }
 }

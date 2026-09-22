@@ -26,68 +26,49 @@ import org.springframework.test.web.servlet.MockMvc;
 @Import({SecurityConfiguration.class, CustomUserDetailsService.class})
 class LoginAuthTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+  @Autowired private MockMvc mockMvc;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+  @Autowired private PasswordEncoder passwordEncoder;
 
-    @MockitoBean
-    private UserRepository userRepository;
+  @MockitoBean private UserRepository userRepository;
 
-    // Tests that a user can successfully log in using their email and password.
-    @Test
-    void userCanLoginSuccessfully() throws Exception {
+  // Tests that a user can successfully log in using their email and password.
+  @Test
+  void userCanLoginSuccessfully() throws Exception {
 
-        User user =
-                new User(
-                        "Michael",
-                        "michael@example.com",
-                        passwordEncoder.encode("password123"));
+    User user = new User("Michael", "michael@example.com", passwordEncoder.encode("password123"));
 
-        when(userRepository.findByEmail("michael@example.com"))
-                .thenReturn(Optional.of(user));
+    when(userRepository.findByEmail("michael@example.com")).thenReturn(Optional.of(user));
 
-        mockMvc
-                .perform(
-                        formLogin("/login")
-                                .user("michael@example.com")
-                                .password("password123"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(authenticated().withUsername("michael@example.com"));
-    }
+    mockMvc
+        .perform(formLogin("/login").user("michael@example.com").password("password123"))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(authenticated().withUsername("michael@example.com"));
+  }
 
-    // Tests that a user cannot log in with the wrong password.
-    @Test
-    void userCannotLoginWithWrongPassword() throws Exception {
+  // Tests that a user cannot log in with the wrong password.
+  @Test
+  void userCannotLoginWithWrongPassword() throws Exception {
 
-        User user =
-                new User(
-                        "Michael",
-                        "michael@example.com",
-                        passwordEncoder.encode("password123"));
+    User user = new User("Michael", "michael@example.com", passwordEncoder.encode("password123"));
 
-        when(userRepository.findByEmail("michael@example.com"))
-                .thenReturn(Optional.of(user));
+    when(userRepository.findByEmail("michael@example.com")).thenReturn(Optional.of(user));
 
-        mockMvc
-                .perform(
-                        formLogin("/login")
-                                .user("michael@example.com")
-                                .password("wrongPassword"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(unauthenticated());
-    }
+    mockMvc
+        .perform(formLogin("/login").user("michael@example.com").password("wrongPassword"))
+        .andExpect(status().is3xxRedirection())
+        .andExpect(unauthenticated());
+  }
 
-    // Tests that a logged-in user can log out and is no longer authenticated.
-    @Test
-    @WithMockUser(username = "michael@example.com")
-    void userCanLogoutSuccessfully() throws Exception {
+  // Tests that a logged-in user can log out and is no longer authenticated.
+  @Test
+  @WithMockUser(username = "michael@example.com")
+  void userCanLogoutSuccessfully() throws Exception {
 
-        mockMvc
-                .perform(logout())
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/login?logout"))
-                .andExpect(unauthenticated());
-    }
+    mockMvc
+        .perform(logout())
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl("/login?logout"))
+        .andExpect(unauthenticated());
+  }
 }
